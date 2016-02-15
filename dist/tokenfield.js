@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.1.0 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.1.1 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -279,7 +279,7 @@ module.exports =
 	      html.container.appendChild(o.el);
 
 	      this._setEvents();
-	      this.renderItems();
+	      this._renderItems();
 	      if (o.mode === 'tokenfield') {
 	        this._resizeInput();
 	      }
@@ -612,7 +612,7 @@ module.exports =
 	            this._newItem(val);
 	          }
 
-	          this.hideSuggestions().renderItems();
+	          this.hideSuggestions()._renderItems();
 	          this._refreshInput(true);
 	          e.preventDefault();
 	          break;
@@ -689,7 +689,7 @@ module.exports =
 	      } else if (target.classList.contains('tokenfield-suggest-item')) {
 	        var item = this._getSuggestedItem(target.key);
 	        this._addItem(item);
-	        this.hideSuggestions().renderItems();
+	        this.hideSuggestions()._renderItems();
 	        this._refreshInput(true);
 	      } else {
 	        this.focus();
@@ -961,8 +961,8 @@ module.exports =
 	      return this._html.container.getBoundingClientRect();
 	    }
 	  }, {
-	    key: 'renderItems',
-	    value: function renderItems() {
+	    key: '_renderItems',
+	    value: function _renderItems() {
 	      var _this6 = this;
 
 	      var v = this._vars;
@@ -972,7 +972,7 @@ module.exports =
 	      html.items.innerHTML = '';
 	      if (v.setItems.length) {
 	        v.setItems.forEach(function (item) {
-	          var itemEl = _this6.renderItem(item);
+	          var itemEl = _this6._renderItem(item);
 	          html.items.appendChild(itemEl);
 	          item.el = itemEl;
 	        });
@@ -983,12 +983,15 @@ module.exports =
 	      }
 	    }
 	  }, {
-	    key: 'renderItem',
-	    value: function renderItem(item) {
+	    key: '_renderItem',
+	    value: function _renderItem(item) {
 	      var o = this._options;
 	      var t = this._templates;
 
-	      var itemHtml = this._buildEl(t.setItem);
+	      var itemHtml = this.renderSetItem(item);
+	      if (typeof itemHtml === 'undefined') {
+	        itemHtml = this._buildEl(t.setItem);
+	      }
 	      var label = itemHtml.querySelector('.item-label');
 	      var input = itemHtml.querySelector('.item-input');
 	      var remove = itemHtml.querySelector('.item-remove');
@@ -1072,6 +1075,9 @@ module.exports =
 	      return this;
 	    }
 	  }, {
+	    key: 'renderSetItem',
+	    value: function renderSetItem(item) {}
+	  }, {
 	    key: 'getItems',
 	    value: function getItems() {
 	      return this._vars.setItems.map(function (item) {
@@ -1085,7 +1091,7 @@ module.exports =
 
 	      this._vars.setItems = items;
 	      this._refreshInput(true);
-	      this.hideSuggestions().renderItems();
+	      this.hideSuggestions()._renderItems();
 	      this.emit('change', this);
 	    }
 	  }, {
@@ -1093,7 +1099,7 @@ module.exports =
 	    value: function emptyItems() {
 	      this._vars.setItems = [];
 	      this._refreshInput(true);
-	      this.hideSuggestions().renderItems();
+	      this.hideSuggestions()._renderItems();
 	      this.emit('change', this);
 	    }
 	  }, {
