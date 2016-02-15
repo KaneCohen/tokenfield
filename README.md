@@ -1,7 +1,7 @@
 # Tokenfield
 
 Input field with tagging/token/chip capabilities written in raw JavaScript. Tokens in OS X or Chips in Android -  
-small UI elements which are inserted into various inpt fields that often combine with autocomplete functionality.
+small UI elements which are inserted into various input fields that often combine with autocomplete functionality.
 
 Tokens allow designers to display extra information about input. For example, in email applications when typing an  
 email address of the recipient, input field could display full name of the owner of a given email and a his/her picture.
@@ -38,7 +38,7 @@ one discarded.
 | el | string or DOM node | null | DOM element or string with selector pointing at an element you want to turn into tokenfield. |
 | items | array | [] | Array of objects amongst which autocomplete will try to find a match. Default format might look like this: `[{id: 1, name: 'foo'}, {id: 2, name: 'bar'}]` |
 | setItems | array | [] | Array of objects which would be displayed as selected after Tokenfield has been created. |
-| newItems | bool | true | Option to allow user to add custom tokens instead of using preset list of tokens or tokens retrevied from the server. |
+| newItems | bool | true | Option to allow user to add custom tokens instead of using preset list of tokens or tokens retrieved from the server. |
 | multiple | bool | true | Option to allow multiple tokens in the field. |
 | maxItems | integer | 0 | Option to limit number of items. Set to 0 to remove the limit. |
 | remote | object | | Details on that - below in Autocomplete section. |
@@ -48,8 +48,8 @@ one discarded.
 | itemLabel | string | `'name'` | Property of an item object which is used to display text in tokens. |
 | itemName | string | `'items'` | Each token item will have its own hidden input which will contain an ID of a given item and a name attribute in an array format. This option sets a name. By default it is set to "items" which means that when user will submit a form server would receive an array of IDs under the name "items". |
 | newItemName | string | `'itemsNew'` | Same as the above except it is only related to new items which were not added via autocomplete. |
-| itemValue | string | `'id'` | Specifies which property from the autocomplete data to use as a primary identfing value. |
-| itemData | string | `'name'` | Which property should be used when you do autocomple on a given array of items. |
+| itemValue | string | `'id'` | Specifies which property from the autocomplete data to use as a primary identifying value. |
+| itemData | string | `'name'` | Which property should be used when you do autocomplete on a given array of items. |
 
 ### Remote Options
 
@@ -68,7 +68,7 @@ new Tokenfield({
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | type | string | `'GET'` | Sets AJAX request type. Usually GET or POST |
-| url | string | null | Specifies which URL will be used to retreive autocomplete data. If set to null - remote autocomplete won't be performed. |
+| url | string | null | Specifies which URL will be used to retrieve autocomplete data. If set to null - remote autocomplete won't be performed. |
 | queryParam | string | `'q'` | Sets name of the parameter which would contain value that user typed in the input field. |
 | delay | integer | 300 | Sets delay in milliseconds after which remote request is performed. |
 | timestampParam | string | `'t'` | Sets parameter for the timestamp when remote call was requested. |
