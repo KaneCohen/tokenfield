@@ -52,7 +52,7 @@ it is not possible to add multiple items such as: "foo", "bar", "foo". Only firs
 | itemName | string | `'items'` | Each token item will have its own hidden input which will contain an ID of a given item and a name attribute in an array format. This option sets a name. By default it is set to "items" which means that when user will submit a form server would receive an array of IDs under the name "items". |
 | newItemName | string | `'itemsNew'` | Same as the above except it is only related to new items which were not added via autocomplete. |
 | itemValue | string | `'id'` | Specifies which property from the autocomplete data to use as a primary identfing value. |
-| itemData | string `'name'` | Which property should be used when you do autocomple on a given array of items. |
+| itemData | string | `'name'` | Which property should be used when you do autocomple on a given array of items. |
 
 ### Remote Options
 
