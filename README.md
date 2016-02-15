@@ -40,6 +40,7 @@ it is not possible to add multiple items such as: "foo", "bar", "foo". Only firs
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | el | string or DOM node | null | DOM element or string with selector pointing at an element you want to turn into tokenfield. |
+| items | array | [] | Array of objects amongst which autocomplete will try to find a match. |
 | setItems | array | [] | Array of objects which would be displayed as selected after Tokenfield has been created. |
 | newItems | bool | true | Option to allow user to add custom tokens instead of using preset list of tokens or tokens retrevied from the server. |
 | multiple | bool | true | Option to allow multiple tokens in the field. |
