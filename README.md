@@ -1,15 +1,12 @@
 # Tokenfield
 
-Input field with tagging/token/chip capabilities written in raw JavaScript.  
-Tokens in OS X or Chips in Adnroid - small UI elements which are inserted into  
-various inpt fields that often combine with autocomplete functionality.  
+Input field with tagging/token/chip capabilities written in raw JavaScript. Tokens in OS X or Chips in Android -  
+small UI elements which are inserted into various inpt fields that often combine with autocomplete functionality.
 
-Tokens allow designers to display extra information about input. For example,  
-in email applications when typing an email address of the recipient, input field  
-could display fill name of the owner of a given email and a picture.
+Tokens allow designers to display extra information about input. For example, in email applications when typing an  
+email address of the recipient, input field could display full name of the owner of a given email and a his/her picture.
 
-This Tokenfield implementation is written in raw JavaScript without any extra  
-dependencies like jQuery.
+This Tokenfield implementation is written in raw JavaScript without any extra dependencies like jQuery.
 
 ## Examples
 
@@ -23,24 +20,23 @@ Tokenfield could be applied to any visible `<input />` element that allows users
 to input text or number.
 
 ````js
-  // Given that we have following HTML element: <input class="my-input" />
-  var tf = new Tokenfield({
-    el: document.querySelector('.my-input')
-  });
+// Given that we have following HTML element: <input class="my-input" />
+var tf = new Tokenfield({
+  el: document.querySelector('.my-input')
+});
 ````
 
-This action would create a Tokenfield wrapped around a given input element.  
-Without additional options, this Tokenfield would allow users to add multiple  
-token items without any specific restrictions. Only unique items are allowed, so  
-it is not possible to add multiple items such as: "foo", "bar", "foo". Only first  
-"foo" would be added and the last one discarded.  
+This action would create Tokenfield wrapped around given input element. Without additional options, this Tokenfield  
+would allow users to add multiple token items without any specific restrictions. Only unique items are allowed, though,  
+so it is not possible to add multiple items such as: "foo", "bar", "foo". Only first "foo" would be added and the last  
+one discarded.
 
 ## Options
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | el | string or DOM node | null | DOM element or string with selector pointing at an element you want to turn into tokenfield. |
-| items | array | [] | Array of objects amongst which autocomplete will try to find a match. |
+| items | array | [] | Array of objects amongst which autocomplete will try to find a match. Default format might look like this: `[{id: 1, name: 'foo'}, {id: 2, name: 'bar'}]` |
 | setItems | array | [] | Array of objects which would be displayed as selected after Tokenfield has been created. |
 | newItems | bool | true | Option to allow user to add custom tokens instead of using preset list of tokens or tokens retrevied from the server. |
 | multiple | bool | true | Option to allow multiple tokens in the field. |
@@ -57,9 +53,8 @@ it is not possible to add multiple items such as: "foo", "bar", "foo". Only firs
 
 ### Remote Options
 
-Below you will find list of options which are related to remote autocomplete requests.
-Options are set as properties of an object assigned to `remote` property of the parent  
-options object:
+Below you will find list of options which are related to remote autocomplete requests. Options are set as properties  
+of an object assigned to `remote` property of the parent options object:
 
 ````js
 new Tokenfield({
