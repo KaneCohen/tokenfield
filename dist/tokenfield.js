@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.1.1 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.1.2 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -1014,12 +1014,11 @@ module.exports =
 	      var v = this._vars;
 	      var o = this._options;
 	      var html = this._html;
-	      var b = this._getBounds();
 
 	      html.suggestList.innerHTML = '';
 
 	      if (!v.suggestedItems.length) {
-	        return;
+	        return this;
 	      }
 
 	      items.every(function (item, k) {
