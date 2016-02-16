@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.2.0 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.2.1 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -944,7 +944,7 @@ module.exports =
 	        var id = guid();
 	        item = _defineProperty({
 	          id: id,
-	          'new': true
+	          isNew: true
 	        }, o.itemData, value.trim());
 	        this.emit('newToken', this, item);
 	      }
@@ -1010,8 +1010,8 @@ module.exports =
 	      var remove = itemHtml.querySelector('.item-remove');
 
 	      remove.key = item.id;
-	      input.setAttribute('name', (item['new'] ? o.newItemName : o.itemName) + '[]');
-	      input.value = item[item['new'] ? o.newitemValue : o.itemValue];
+	      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + '[]');
+	      input.value = item[item.isNew ? o.newitemValue : o.itemValue];
 	      label.textContent = item[o.itemLabel];
 	      if (item.focused) {
 	        itemHtml.classList.add('focused');
