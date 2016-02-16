@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.2.1 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.2.2 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -384,7 +384,8 @@ module.exports =
 	          if (v.xhr.status == 200) {
 	            var response = JSON.parse(v.xhr.responseText);
 	            v.cache[val] = response;
-	            v.suggestedItems = _this._filterSetItems(response);
+	            var items = _this._filterData(val, response);
+	            v.suggestedItems = _this._filterSetItems(items);
 	            _this.showSuggestions();
 	          } else if (v.xhr.stauts > 0) {
 	            throw new Error('Error while loading remote data.');
@@ -395,16 +396,12 @@ module.exports =
 	    }
 	  }, {
 	    key: '_filterData',
-	    value: function _filterData(val) {
-	      var v = this._vars;
+	    value: function _filterData(val, data) {
 	      var o = this._options;
-	      var patt = new RegExp(escapeRegex(val), 'ig');
-	      var items = o.items.filter(function (item) {
+	      var patt = new RegExp(escapeRegex(val), 'i');
+	      return data.filter(function (item) {
 	        return patt.test(item[o.itemData]);
 	      });
-	      v.cache[val] = items;
-	      v.suggestedItems = this._filterSetItems(items);
-	      this.showSuggestions();
 	    }
 	  }, {
 	    key: '_abortXhr',
@@ -534,7 +531,6 @@ module.exports =
 	      var v = this._vars;
 	      var o = this._options;
 	      var html = this._html;
-	      var prevInput = html.input.value;
 
 	      if (o.mode === 'tokenfield') {
 	        setTimeout(function () {
@@ -674,11 +670,14 @@ module.exports =
 	            _this4._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
-	          this._filterData(val);
+	          var items = this._filterData(val, o.items);
+	          v.suggestedItems = this._filterSetItems(items);
+	          this.showSuggestions();
 	        }
 	      } else {
 	        // work with cache data
-	        v.suggestedItems = this._filterSetItems(v.cache[val]);
+	        var items = this._filterData(val, v.cache[val]);
+	        v.suggestedItems = this._filterSetItems(items);
 	        this.showSuggestions();
 	      }
 	    }
