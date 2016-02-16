@@ -6,7 +6,10 @@ small UI elements which are inserted into various input fields that often combin
 Tokens allow designers to display extra information about input. For example, in email applications when typing an  
 email address of the recipient, input field could display full name of the owner of a given email and a his/her picture.
 
-This Tokenfield implementation is written in raw JavaScript without any extra dependencies like jQuery.
+This Tokenfield implementation is written in raw JavaScript without any extra dependencies like jQuery. it has one  
+somewhat opinionated behavior - Tokenfield intended use case is work with structured data. More specifically, it expects  
+autocomplete data to be JSOn formatted array of objects where each object contains token ID and token Name. More on that  
+below.
 
 ## Examples
 
@@ -30,6 +33,20 @@ This action would create Tokenfield wrapped around given input element. Without 
 would allow users to add multiple token items without any specific restrictions. Only unique items are allowed, though,  
 so it is not possible to add multiple items such as: "foo", "bar", "foo". Only first "foo" would be added and the last  
 one discarded.
+
+
+### Data
+
+As it was mentioned above - Tokenfield is intended to be used with structured data - array of objects. With default  
+options it expects that data returned by the autocomplete or filtered from a given set of items would look like that:  
+````js
+[{id: 1, name: 'Red'}, {id: 2, name: 'Blue'}, {id: 3, name: 'Greed'}, ... ]
+````
+You can see that each object has two properties - `id` and a `name`. With this format when you submit form where  
+Tokenfield is located, server would receive not an array of string, but an array of IDs.  
+
+However, that is a case only with tokens that are added via autocomplete. If Tokenfield accepts new tokens, then form  
+would send an additional array which would contain an array of strings.
 
 ## Options
 
@@ -90,7 +107,10 @@ Available events are:
 | shownSuggestions | Fired after Tokenfield has shown suggestions box. |
 | hideSuggestions | Fired before Tokenfield would hide suggestions box. |
 | hiddenSuggestions | Fired after Tokenfield has hidden suggestions box. |
-
+| addToken | Fired before token has been added to the tokenfield. Second argument contains token data. |
+| addedToken | Fired after token has been added to internal token list. |
+| removeToken | Fired before token has been removed from the tokenfield. Second argument contains token data. |
+| removedToken | Fired after token has been removed from the tokenfield. Second argument contains removed token data. |
 
 ## TODO
 

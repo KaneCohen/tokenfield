@@ -333,6 +333,7 @@ module.exports =
 	        var placeholder = v.setItems.length ? '' : this._options.placeholder;
 	        html.input.setAttribute('placeholder', placeholder);
 	      }
+	      return this;
 	    }
 	  }, {
 	    key: '_resizeInput',
@@ -472,11 +473,11 @@ module.exports =
 	    value: function _onFocus(e) {
 	      var v = this._vars;
 	      var html = this._html;
-	      v.events.onKey = this._onKey.bind(this);
+	      v.events.onKeyDown = this._onKeyDown.bind(this);
 	      v.events.onFocusOut = this._onFocusOut.bind(this);
 
-	      html.input.removeEventListener('keydown', v.events.onKey);
-	      html.input.addEventListener('keydown', v.events.onKey);
+	      html.input.removeEventListener('keydown', v.events.onKeyDown);
+	      html.input.addEventListener('keydown', v.events.onKeyDown);
 	      html.input.addEventListener('focusout', v.events.onFocusOut);
 	      this.focus();
 	      if (html.input.value.trim().length >= this._options.minChars) {
@@ -488,7 +489,7 @@ module.exports =
 	    value: function _onFocusOut(e) {
 	      var v = this._vars;
 	      var html = this._html;
-	      html.input.removeEventListener('keydown', v.events.onKey);
+	      html.input.removeEventListener('keydown', v.events.onKeyDown);
 	      html.input.removeEventListener('focusout', v.events.onFocusOut);
 
 	      if (!html.container.contains(e.target)) {
@@ -526,13 +527,14 @@ module.exports =
 	      this._resizeInput(this._html.input.value);
 	    }
 	  }, {
-	    key: '_onKey',
-	    value: function _onKey(e) {
+	    key: '_onKeyDown',
+	    value: function _onKeyDown(e) {
 	      var _this2 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
 	      var html = this._html;
+	      var prevInput = html.input.value;
 
 	      if (o.mode === 'tokenfield') {
 	        setTimeout(function () {
@@ -544,7 +546,7 @@ module.exports =
 	        this._keyAction(e);
 	        return true;
 	      } else {
-	        this._defocusItems();
+	        this._defocusItems()._renderItems();
 	      }
 
 	      clearTimeout(v.timer);
@@ -577,20 +579,21 @@ module.exports =
 
 	      switch (keyName) {
 	        case 'esc':
-	          this.hideSuggestions();
-	          this._defocusItems();
+	          this._deselectItems()._defocusItems()._renderItems().hideSuggestions();
 	          break;
 	        case 'up':
 	          if (this._vars.suggested) {
 	            this._selectPrevItem();
+	            e.preventDefault();
 	          }
-	          this._defocusItems();
+	          this._defocusItems()._renderItems();
 	          break;
 	        case 'down':
 	          if (this._vars.suggested) {
 	            this._selectNextItem();
+	            e.preventDefault();
 	          }
-	          this._defocusItems();
+	          this._defocusItems()._renderItems();
 	          break;
 	        case 'left':
 	          this._focusPrevItem();
@@ -609,11 +612,12 @@ module.exports =
 	          if (item) {
 	            this._addItem(item);
 	          } else if (val.length) {
-	            this._newItem(val);
+	            item = this._newItem(val);
 	          }
 
-	          this.hideSuggestions()._renderItems();
-	          this._refreshInput(true);
+	          if (item) {
+	            this._renderItems()._refreshInput(true).hideSuggestions();
+	          }
 	          e.preventDefault();
 	          break;
 	        case 'delete':
@@ -627,10 +631,10 @@ module.exports =
 	              } else {
 	                this._focusItem(v.setItems[v.setItems.length - 1].id);
 	              }
-	              this._refreshInput();
 	            } else if (focusedItem) {
 	              this._removeItem(focusedItem.id);
 	            }
+	            this._renderItems()._refreshInput();
 	          } else {
 	            v.timer = setTimeout(function () {
 	              _this3._keyInput(e);
@@ -684,13 +688,10 @@ module.exports =
 	      var target = e.target;
 	      if (target.classList.contains('item-remove')) {
 	        var item = this._getItem(target.key);
-	        this._removeItem(target.key);
-	        this.focus();
+	        this._removeItem(target.key)._renderItems().focus();
 	      } else if (target.classList.contains('tokenfield-suggest-item')) {
 	        var item = this._getSuggestedItem(target.key);
-	        this._addItem(item);
-	        this.hideSuggestions()._renderItems();
-	        this._refreshInput(true);
+	        this._addItem(item)._renderItems()._refreshInput(true).hideSuggestions();
 	      } else {
 	        this.focus();
 	        this._keyInput(e);
@@ -759,6 +760,9 @@ module.exports =
 	      } else {
 	        this._focusItem(items[items.length - 1].id);
 	      }
+	      this._renderItems();
+
+	      return this;
 	    }
 	  }, {
 	    key: '_focusNextItem',
@@ -779,6 +783,7 @@ module.exports =
 	      } else {
 	        this._focusItem(items[0].id);
 	      }
+	      this._renderItems();
 
 	      return this;
 	    }
@@ -807,8 +812,8 @@ module.exports =
 	      });
 	    }
 	  }, {
-	    key: '_unselectItem',
-	    value: function _unselectItem(id) {
+	    key: '_deselectItem',
+	    value: function _deselectItem(id) {
 	      this._vars.suggestedItems.every(function (v) {
 	        if (v.id === id) {
 	          v.selected = false;
@@ -816,13 +821,15 @@ module.exports =
 	        }
 	        return true;
 	      });
+	      return this;
 	    }
 	  }, {
-	    key: '_unselectItems',
-	    value: function _unselectItems() {
+	    key: '_deselectItems',
+	    value: function _deselectItems() {
 	      this._vars.suggestedItems.every(function (v) {
 	        v.selected = false;
 	      });
+	      return this;
 	    }
 	  }, {
 	    key: '_getSelectedItemKey',
@@ -875,24 +882,29 @@ module.exports =
 
 	      this._vars.setItems.every(function (item, k) {
 	        if (item.id === id) {
+	          _this5.emit('removeToken', _this5, item);
 	          _this5._vars.setItems.splice(k, 1);
-	          if (item.el) item.el.remove();
+	          _this5.emit('removedToken', _this5);
+	          _this5.emit('change', _this5);
 	          return false;
 	        }
 	        return true;
 	      });
-	      this.emit('change', this);
+	      return this;
 	    }
 	  }, {
 	    key: '_addItem',
 	    value: function _addItem(item) {
 	      item.focused = false;
 	      if (!this._getItem(item.id)) {
+	        this.emit('addToken', this, item);
 	        if (!this._options.maxItems || this._options.maxItems && this._vars.setItems.length < this._options.maxItems) {
 	          this._vars.setItems.push(item);
+	          this.emit('addedToken', this, item);
+	          this.emit('change', this);
 	        }
 	      }
-	      this.emit('change', this);
+	      return this;
 	    }
 	  }, {
 	    key: 'getFocusedItem',
@@ -912,24 +924,16 @@ module.exports =
 	    value: function _focusItem(id) {
 	      this._vars.setItems.forEach(function (v) {
 	        v.focused = v.id === id;
-	        if (v.el) {
-	          if (v.focused) {
-	            v.el.classList.add('focused');
-	          } else {
-	            v.el.classList.remove('focused');
-	          }
-	        }
 	      });
+	      return this;
 	    }
 	  }, {
 	    key: '_defocusItems',
 	    value: function _defocusItems() {
 	      this._vars.setItems.forEach(function (item) {
-	        if (item.focused) {
-	          item.el.classList.remove('focused');
-	        }
 	        item.focused = false;
 	      });
+	      return this;
 	    }
 	  }, {
 	    key: '_newItem',
@@ -942,11 +946,13 @@ module.exports =
 	          id: id,
 	          'new': true
 	        }, o.itemData, value.trim());
+	        this.emit('newToken', this, item);
 	      }
 	      if (item) {
 	        this._addItem(item);
+	        return item;
 	      }
-	      this._refreshInput(true);
+	      return null;
 	    }
 
 	    // Wrapper for build function in case some of the functions are overwritten.
@@ -975,12 +981,19 @@ module.exports =
 	          var itemEl = _this6._renderItem(item);
 	          html.items.appendChild(itemEl);
 	          item.el = itemEl;
+	          if (item.focused) {
+	            item.el.classList.add('focused');
+	          } else {
+	            item.el.classList.remove('focused');
+	          }
 	        });
 	      }
 
 	      if (v.setItems.length > 1 && o.mode === 'tokenfield') {
 	        html.input.setAttribute('placeholder', '');
 	      }
+
+	      return this;
 	    }
 	  }, {
 	    key: '_renderItem',
