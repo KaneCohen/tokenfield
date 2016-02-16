@@ -15,6 +15,8 @@ below.
 
 View live [examples here](https://kanecohen.github.io/tokenfield).
 
+![GIF demo](https://cloud.githubusercontent.com/assets/578455/13090371/72c292d4-d506-11e5-914e-06fd19b21f11.gif)
+
 ## Usage
 
 ### Via JavaScript
