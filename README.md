@@ -95,7 +95,7 @@ new Tokenfield({
 
 ## Events
 
-Modal Vanilla uses standard node.js EventEmitter and therefore supports such
+Tokenfield uses standard node.js EventEmitter and therefore supports such
 event as: 'on', 'once', 'removeAllListeners', 'removeListener'.
 
 For more details on EventEmitter, please check official [https://nodejs.org/api/events.html](documentaion page).
