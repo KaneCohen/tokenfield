@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.2.5 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.2.6 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -387,7 +387,7 @@ module.exports =
 	            var items = _this._filterData(val, response);
 	            v.suggestedItems = _this._filterSetItems(items);
 	            _this.showSuggestions();
-	          } else if (v.xhr.stauts > 0) {
+	          } else if (v.xhr.status > 0) {
 	            throw new Error('Error while loading remote data.');
 	          }
 	          _this._abortXhr();
