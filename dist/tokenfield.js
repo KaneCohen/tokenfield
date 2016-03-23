@@ -387,7 +387,7 @@ module.exports =
 	            var items = _this._filterData(val, response);
 	            v.suggestedItems = _this._filterSetItems(items);
 	            _this.showSuggestions();
-	          } else if (v.xhr.stauts > 0) {
+	          } else if (v.xhr.status > 0) {
 	            throw new Error('Error while loading remote data.');
 	          }
 	          _this._abortXhr();
