@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.2.6 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.2.7 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -191,11 +191,11 @@ module.exports =
 	    itemLabel: 'name', // Property to use in order to render item label.
 	    itemName: 'items', // If set, for each tag/token there will be added
 	    // input field with array property name:
-	    // name="itemName[]".
+	    // name="items[]".
 
-	    newItemName: 'itemsNew', // Suffix that will be added to the new tag in
+	    newItemName: 'items_new', // Suffix that will be added to the new tag in
 	    // case it was not available from the server:
-	    // name="itemNameNew[]".
+	    // name="items_new[]".
 
 	    itemValue: 'id', // Value that will be taken out of the results and inserted into itemAttr.
 	    newItemValue: 'name', // Value that will be taken out of the results and inserted into itemAttr.

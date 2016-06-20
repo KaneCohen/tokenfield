@@ -1,6 +1,6 @@
 {
   "name": "tokenfield",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Input field with tagging/token/chip capabilities written in raw JavaScript",
   "keywords": ["tagging", "tokens", "tokenizer", "chips", "autocomplete"],
   "author": {
@@ -19,7 +19,7 @@
     "eslint": "1.10.3",
     "eslint-loader": "1.2.0",
     "webpack": "1.12.11",
-    "node-sass": "3.4.2"
+    "node-sass": "3.7.0"
   },
   "scripts": {
     "lint": "eslint lib",

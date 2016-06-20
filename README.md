@@ -66,7 +66,7 @@ would send an additional array which would contain an array of strings.
 | maxSuggests | integer | 10 | Specifies how many suggestions should be shown. |
 | itemLabel | string | `'name'` | Property of an item object which is used to display text in tokens. |
 | itemName | string | `'items'` | Each token item will have its own hidden input which will contain an ID of a given item and a name attribute in an array format. This option sets a name. By default it is set to "items" which means that when user will submit a form server would receive an array of IDs under the name "items". |
-| newItemName | string | `'itemsNew'` | Same as the above except it is only related to new items which were not added via autocomplete. |
+| newItemName | string | `'items_new'` | Same as the above except it is only related to new items which were not added via autocomplete. |
 | itemValue | string | `'id'` | Specifies which property from the autocomplete data to use as a primary identifying value. |
 | itemData | string | `'name'` | Which property should be used when you do autocomplete on a given array of items. |
 
