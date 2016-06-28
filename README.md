@@ -114,6 +114,14 @@ Available events are:
 | removeToken | Fired before token has been removed from the tokenfield. Second argument contains token data. |
 | removedToken | Fired after token has been removed from the tokenfield. Second argument contains removed token data. |
 
-## TODO
+## Helper Methods
 
-Add gif demo, more variances of Tokenfield in demo page, available methods.
+Tokenfield has several overridable methods which allow user to remap given token data or change how some elements are  
+rendered.
+
+Available methods are:
+
+| Method name | Description |
+| ---------- | ----------- |
+| remapData | Fired on every data request. Override it if you want to change structure of an available data - change props names, sanitize property values, remove props. Just make sure to return array of objects which would be consumed by the tokenfield instance. |
+| renderSetItemLabel | Fired on token item render. Override this method in order to change how label for each token is rendered |
