@@ -13,7 +13,7 @@ var targets = [
     },
     plugins: [
       new webpack.optimize.UglifyJsPlugin({minimize: true})
-    ],
+    ]
   },
   {
     target: 'node',

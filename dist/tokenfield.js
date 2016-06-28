@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.0 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.1 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -220,6 +220,7 @@ module.exports =
 	    var _options = _makeDefaultsAndOptions._options;
 
 	    this.id = guid();
+	    this.key = 'key_' + this.id;
 	    this._vars = Object.assign({}, _defaults);
 	    this._options = Object.assign({}, _options, options);
 	    this._options.remote = Object.assign({}, _options.remote, options.remote);
@@ -384,8 +385,9 @@ module.exports =
 	          if (v.xhr.status == 200) {
 	            var response = JSON.parse(v.xhr.responseText);
 	            v.cache[val] = response;
-	            var mappedData = _this.remapData(response);
-	            var items = _this._filterData(val, mappedData);
+	            var mappedData = _this._mapData(response);
+	            var remappedData = _this.remapData(mappedData);
+	            var items = _this._filterData(val, remappedData);
 	            v.suggestedItems = _this._filterSetItems(items);
 	            _this.showSuggestions();
 	          } else if (v.xhr.status > 0) {
@@ -402,6 +404,16 @@ module.exports =
 	      var patt = new RegExp(escapeRegex(val), 'i');
 	      return data.filter(function (item) {
 	        return patt.test(item[o.itemData]);
+	      });
+	    }
+	  }, {
+	    key: '_mapData',
+	    value: function _mapData(data) {
+	      var _this2 = this;
+
+	      return data.map(function (item) {
+	        item[_this2.key] = guid();
+	        return item;
 	      });
 	    }
 
@@ -423,15 +435,16 @@ module.exports =
 	  }, {
 	    key: '_filterSetItems',
 	    value: function _filterSetItems(items) {
+	      var key = this.key;
 	      var v = this._vars;
 	      if (!v.setItems.length) return items;
 
-	      var setIds = v.setItems.map(function (item) {
-	        return item.id;
+	      var setKeys = v.setItems.map(function (item) {
+	        return item[key];
 	      });
 
 	      return items.filter(function (item) {
-	        if (setIds.indexOf(item.id) === -1) {
+	        if (setKeys.indexOf(item[key]) === -1) {
 	          return true;
 	        }
 	        return false;
@@ -534,7 +547,7 @@ module.exports =
 	  }, {
 	    key: '_onKeyDown',
 	    value: function _onKeyDown(e) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -542,7 +555,7 @@ module.exports =
 
 	      if (o.mode === 'tokenfield') {
 	        setTimeout(function () {
-	          _this2._resizeInput(html.input.value);
+	          _this3._resizeInput(html.input.value);
 	        }, 1);
 	      }
 
@@ -560,17 +573,18 @@ module.exports =
 	        e.preventDefault();
 	      } else {
 	        setTimeout(function () {
-	          _this2._keyInput(e);
+	          _this3._keyInput(e);
 	        }, 1);
 	      }
 	    }
 	  }, {
 	    key: '_keyAction',
 	    value: function _keyAction(e) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var item = null;
 	      var v = this._vars;
+	      var key = this.key;
 	      var o = this._options;
 	      var html = this._html;
 	      var keyName = v.keys[e.keyCode];
@@ -631,17 +645,17 @@ module.exports =
 	            var focusedItem = this.getFocusedItem();
 	            if (o.mode === 'tokenfield' && !val.length && v.setItems.length) {
 	              if (focusedItem) {
-	                this._removeItem(focusedItem.id);
+	                this._removeItem(focusedItem[key]);
 	              } else {
-	                this._focusItem(v.setItems[v.setItems.length - 1].id);
+	                this._focusItem(v.setItems[v.setItems.length - 1][key]);
 	              }
 	            } else if (focusedItem) {
-	              this._removeItem(focusedItem.id);
+	              this._removeItem(focusedItem[key]);
 	            }
 	            this._renderItems()._refreshInput();
 	          } else {
 	            v.timer = setTimeout(function () {
-	              _this3._keyInput(e);
+	              _this4._keyInput(e);
 	            }, o.delay);
 	          }
 	          break;
@@ -652,7 +666,7 @@ module.exports =
 	  }, {
 	    key: '_keyInput',
 	    value: function _keyInput(e) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -675,18 +689,20 @@ module.exports =
 	        // Get new data.
 	        if (o.remote.url) {
 	          v.timer = setTimeout(function () {
-	            _this4._fetchData(val);
+	            _this5._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
-	          var mappedData = this.remapData(o.items);
-	          var items = this._filterData(val, mappedData);
+	          var mappedData = this._mapData(o.items);
+	          var remappedData = this.remapData(mappedData);
+	          var items = this._filterData(val, remappedData);
 	          v.suggestedItems = this._filterSetItems(items);
 	          this.showSuggestions();
 	        }
 	      } else {
 	        // work with cache data
-	        var mappedData = this.remapData(v.cache[val]);
-	        var items = this._filterData(val, mappedData);
+	        var mappedData = this._mapData(v.cache[val]);
+	        var remappedData = this.remapData(mappedData);
+	        var items = this._filterData(val, remappedData);
 	        v.suggestedItems = this._filterSetItems(items);
 	        this.showSuggestions();
 	      }
@@ -709,21 +725,22 @@ module.exports =
 	  }, {
 	    key: '_selectPrevItem',
 	    value: function _selectPrevItem() {
+	      var key = this.key;
 	      var items = this._vars.suggestedItems;
-	      var key = this._getSelectedItemKey();
+	      var index = this._getSelectedItemIndex();
 
 	      if (!items.length) {
 	        return this;
 	      }
 
-	      if (key !== null) {
-	        if (key === 0) {
-	          this._selectItem(items[items.length - 1].id);
+	      if (index !== null) {
+	        if (index === 0) {
+	          this._selectItem(items[items.length - 1][key]);
 	        } else {
-	          this._selectItem(items[key - 1].id);
+	          this._selectItem(items[index - 1][key]);
 	        }
 	      } else {
-	        this._selectItem(items[items.length - 1].id);
+	        this._selectItem(items[items.length - 1][key]);
 	      }
 
 	      return this;
@@ -731,21 +748,22 @@ module.exports =
 	  }, {
 	    key: '_selectNextItem',
 	    value: function _selectNextItem() {
+	      var key = this.key;
 	      var items = this._vars.suggestedItems;
-	      var key = this._getSelectedItemKey();
+	      var index = this._getSelectedItemIndex();
 
 	      if (!items.length) {
 	        return this;
 	      }
 
-	      if (key !== null) {
-	        if (key === items.length - 1) {
-	          this._selectItem(items[0].id);
+	      if (index !== null) {
+	        if (index === items.length - 1) {
+	          this._selectItem(items[0][key]);
 	        } else {
-	          this._selectItem(items[key + 1].id);
+	          this._selectItem(items[index + 1][key]);
 	        }
 	      } else {
-	        this._selectItem(items[0].id);
+	        this._selectItem(items[0][key]);
 	      }
 
 	      return this;
@@ -753,21 +771,22 @@ module.exports =
 	  }, {
 	    key: '_focusPrevItem',
 	    value: function _focusPrevItem() {
+	      var key = this.key;
 	      var items = this._vars.setItems;
-	      var key = this._getFocusedItemKey();
+	      var index = this._getFocusedItemIndex();
 
 	      if (!items.length) {
 	        return this;
 	      }
 
-	      if (key !== null) {
-	        if (key === 0) {
+	      if (index !== null) {
+	        if (index === 0) {
 	          this._defocusItems();
 	        } else {
-	          this._focusItem(items[key - 1].id);
+	          this._focusItem(items[index - 1][key]);
 	        }
 	      } else {
-	        this._focusItem(items[items.length - 1].id);
+	        this._focusItem(items[items.length - 1][key]);
 	      }
 	      this._renderItems();
 
@@ -776,21 +795,22 @@ module.exports =
 	  }, {
 	    key: '_focusNextItem',
 	    value: function _focusNextItem() {
+	      var key = this.key;
 	      var items = this._vars.setItems;
-	      var key = this._getFocusedItemKey();
+	      var index = this._getFocusedItemIndex();
 
 	      if (!items.length) {
 	        return this;
 	      }
 
-	      if (key !== null) {
-	        if (key === items.length - 1) {
+	      if (index !== null) {
+	        if (index === items.length - 1) {
 	          this._defocusItems();
 	        } else {
-	          this._focusItem(items[key + 1].id);
+	          this._focusItem(items[index + 1][key]);
 	        }
 	      } else {
-	        this._focusItem(items[0].id);
+	        this._focusItem(items[0][key]);
 	      }
 	      this._renderItems();
 
@@ -799,18 +819,21 @@ module.exports =
 	  }, {
 	    key: '_getSelectedItems',
 	    value: function _getSelectedItems() {
+	      var key = this.key;
 	      var setIds = this._vars.setItems.map(function (item) {
-	        return item.id;
+	        return item[key];
 	      });
 	      return this._vars.suggestedItems.filter(function (v) {
-	        return v.selected && setIds.indexOf(v.id) < 0;
+	        return v.selected && setIds.indexOf(v[key]) < 0;
 	      });
 	    }
 	  }, {
 	    key: '_selectItem',
-	    value: function _selectItem(id) {
+	    value: function _selectItem(key) {
+	      var _this6 = this;
+
 	      this._vars.suggestedItems.forEach(function (v) {
-	        v.selected = v.id === id;
+	        v.selected = v[_this6.key] === key;
 	        if (v.el) {
 	          if (v.selected) {
 	            v.el.classList.add('selected');
@@ -822,9 +845,11 @@ module.exports =
 	    }
 	  }, {
 	    key: '_deselectItem',
-	    value: function _deselectItem(id) {
+	    value: function _deselectItem(key) {
+	      var _this7 = this;
+
 	      this._vars.suggestedItems.every(function (v) {
-	        if (v.id === id) {
+	        if (v[_this7.key] === key) {
 	          v.selected = false;
 	          return false;
 	        }
@@ -841,36 +866,39 @@ module.exports =
 	      return this;
 	    }
 	  }, {
-	    key: '_getSelectedItemKey',
-	    value: function _getSelectedItemKey() {
-	      var key = null;
+	    key: '_getSelectedItemIndex',
+	    value: function _getSelectedItemIndex() {
+	      var index = null;
 	      this._vars.suggestedItems.every(function (v, k) {
 	        if (v.selected) {
-	          key = k;
+	          index = k;
 	          return false;
 	        }
 	        return true;
 	      });
-	      return key;
+	      return index;
 	    }
 	  }, {
-	    key: '_getFocusedItemKey',
-	    value: function _getFocusedItemKey() {
-	      var key = null;
+	    key: '_getFocusedItemIndex',
+	    value: function _getFocusedItemIndex() {
+	      var index = null;
 	      this._vars.setItems.every(function (v, k) {
 	        if (v.focused) {
-	          key = k;
+	          index = k;
 	          return false;
 	        }
 	        return true;
 	      });
-	      return key;
+	      return index;
 	    }
 	  }, {
 	    key: '_getItem',
 	    value: function _getItem(val) {
-	      var prop = arguments.length <= 1 || arguments[1] === undefined ? 'id' : arguments[1];
+	      var prop = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
+	      if (prop === null) {
+	        prop = this.key;
+	      }
 	      var items = this._vars.setItems.filter(function (v) {
 	        return v[prop] === val;
 	      });
@@ -878,23 +906,25 @@ module.exports =
 	    }
 	  }, {
 	    key: '_getSuggestedItem',
-	    value: function _getSuggestedItem(id) {
+	    value: function _getSuggestedItem(key) {
+	      var _this8 = this;
+
 	      var items = this._vars.suggestedItems.filter(function (v) {
-	        return v.id === id;
+	        return v[_this8.key] === key;
 	      });
 	      return items.length ? items[0] : null;
 	    }
 	  }, {
 	    key: '_removeItem',
-	    value: function _removeItem(id) {
-	      var _this5 = this;
+	    value: function _removeItem(key) {
+	      var _this9 = this;
 
 	      this._vars.setItems.every(function (item, k) {
-	        if (item.id === id) {
-	          _this5.emit('removeToken', _this5, item);
-	          _this5._vars.setItems.splice(k, 1);
-	          _this5.emit('removedToken', _this5);
-	          _this5.emit('change', _this5);
+	        if (item[_this9.key] === key) {
+	          _this9.emit('removeToken', _this9, item);
+	          _this9._vars.setItems.splice(k, 1);
+	          _this9.emit('removedToken', _this9);
+	          _this9.emit('change', _this9);
 	          return false;
 	        }
 	        return true;
@@ -905,7 +935,7 @@ module.exports =
 	    key: '_addItem',
 	    value: function _addItem(item) {
 	      item.focused = false;
-	      if (!this._getItem(item.id)) {
+	      if (!this._getItem(item[this.key])) {
 	        this.emit('addToken', this, item);
 	        if (!this._options.maxItems || this._options.maxItems && this._vars.setItems.length < this._options.maxItems) {
 	          this._vars.setItems.push(item);
@@ -930,9 +960,11 @@ module.exports =
 	    }
 	  }, {
 	    key: '_focusItem',
-	    value: function _focusItem(id) {
+	    value: function _focusItem(key) {
+	      var _this10 = this;
+
 	      this._vars.setItems.forEach(function (v) {
-	        v.focused = v.id === id;
+	        v.focused = v[_this10.key] === key;
 	      });
 	      return this;
 	    }
@@ -950,11 +982,11 @@ module.exports =
 	      var o = this._options;
 	      var item = this._getItem(value, o.itemData);
 	      if (!item && o.newItems) {
-	        var id = guid();
-	        item = _defineProperty({
-	          id: id,
+	        var _item;
+
+	        item = (_item = {
 	          isNew: true
-	        }, o.itemData, value.trim());
+	        }, _defineProperty(_item, this.key, guid()), _defineProperty(_item, o.itemData, value.trim()), _item);
 	        this.emit('newToken', this, item);
 	      }
 	      if (item) {
@@ -978,7 +1010,7 @@ module.exports =
 	  }, {
 	    key: '_renderItems',
 	    value: function _renderItems() {
-	      var _this6 = this;
+	      var _this11 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -987,7 +1019,7 @@ module.exports =
 	      html.items.innerHTML = '';
 	      if (v.setItems.length) {
 	        v.setItems.forEach(function (item) {
-	          var itemEl = _this6._renderItem(item);
+	          var itemEl = _this11._renderItem(item);
 	          html.items.appendChild(itemEl);
 	          item.el = itemEl;
 	          if (item.focused) {
@@ -1014,7 +1046,7 @@ module.exports =
 	      var input = itemHtml.querySelector('.item-input');
 	      var remove = itemHtml.querySelector('.item-remove');
 
-	      remove.key = item.id;
+	      remove.key = item[this.key];
 	      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + '[]');
 
 	      input.value = item[item.isNew ? o.newitemValue : o.itemValue] || null;
@@ -1038,7 +1070,7 @@ module.exports =
 	  }, {
 	    key: 'renderSuggestions',
 	    value: function renderSuggestions(items) {
-	      var _this7 = this;
+	      var _this12 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1053,7 +1085,7 @@ module.exports =
 	      items.every(function (item, k) {
 	        if (k >= o.maxSuggest) return false;
 
-	        var el = _this7.renderSuggestedItem(item, k);
+	        var el = _this12.renderSuggestedItem(item, k);
 	        item.el = el;
 	        html.suggestList.appendChild(el);
 	        return true;
@@ -1066,7 +1098,7 @@ module.exports =
 	    value: function renderSuggestedItem(item, k) {
 	      var o = this._options;
 	      var el = this._buildEl(this._templates.suggestItem);
-	      el.key = item.id;
+	      el.key = item[this.key];
 	      el.innerHTML = item[o.itemData];
 	      el.setAttribute('title', item[o.itemData]);
 
