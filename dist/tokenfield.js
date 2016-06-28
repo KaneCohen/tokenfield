@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.2.7 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.0 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -384,7 +384,8 @@ module.exports =
 	          if (v.xhr.status == 200) {
 	            var response = JSON.parse(v.xhr.responseText);
 	            v.cache[val] = response;
-	            var items = _this._filterData(val, response);
+	            var mappedData = _this.remapData(response);
+	            var items = _this._filterData(val, mappedData);
 	            v.suggestedItems = _this._filterSetItems(items);
 	            _this.showSuggestions();
 	          } else if (v.xhr.status > 0) {
@@ -402,6 +403,13 @@ module.exports =
 	      return data.filter(function (item) {
 	        return patt.test(item[o.itemData]);
 	      });
+	    }
+
+	    // Overwriteable method where you can change given data to appropriate format.
+	  }, {
+	    key: 'remapData',
+	    value: function remapData(data) {
+	      return data;
 	    }
 	  }, {
 	    key: '_abortXhr',
@@ -670,13 +678,15 @@ module.exports =
 	            _this4._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
-	          var items = this._filterData(val, o.items);
+	          var mappedData = this.remapData(o.items);
+	          var items = this._filterData(val, mappedData);
 	          v.suggestedItems = this._filterSetItems(items);
 	          this.showSuggestions();
 	        }
 	      } else {
 	        // work with cache data
-	        var items = this._filterData(val, v.cache[val]);
+	        var mappedData = this.remapData(v.cache[val]);
+	        var items = this._filterData(val, mappedData);
 	        v.suggestedItems = this._filterSetItems(items);
 	        this.showSuggestions();
 	      }
@@ -998,25 +1008,32 @@ module.exports =
 	    key: '_renderItem',
 	    value: function _renderItem(item) {
 	      var o = this._options;
-	      var t = this._templates;
 
-	      var itemHtml = this.renderSetItem(item);
-	      if (typeof itemHtml === 'undefined') {
-	        itemHtml = this._buildEl(t.setItem);
-	      }
+	      var itemHtml = this.renderSetItemHtml(item);
 	      var label = itemHtml.querySelector('.item-label');
 	      var input = itemHtml.querySelector('.item-input');
 	      var remove = itemHtml.querySelector('.item-remove');
 
 	      remove.key = item.id;
 	      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + '[]');
-	      input.value = item[item.isNew ? o.newitemValue : o.itemValue];
-	      label.textContent = item[o.itemLabel];
+
+	      input.value = item[item.isNew ? o.newitemValue : o.itemValue] || null;
+	      label.textContent = this.renderSetItemLabel(item);
 	      if (item.focused) {
 	        itemHtml.classList.add('focused');
 	      }
 
 	      return itemHtml;
+	    }
+	  }, {
+	    key: 'renderSetItemHtml',
+	    value: function renderSetItemHtml() {
+	      return this._buildEl(this._templates.setItem);
+	    }
+	  }, {
+	    key: 'renderSetItemLabel',
+	    value: function renderSetItemLabel(item) {
+	      return item[this._options.itemLabel];
 	    }
 	  }, {
 	    key: 'renderSuggestions',
@@ -1085,9 +1102,6 @@ module.exports =
 	      this.emit('hiddenSuggestions', this);
 	      return this;
 	    }
-	  }, {
-	    key: 'renderSetItem',
-	    value: function renderSetItem(item) {}
 	  }, {
 	    key: 'getItems',
 	    value: function getItems() {
