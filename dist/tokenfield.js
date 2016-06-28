@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.1 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.2 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -385,9 +385,8 @@ module.exports =
 	          if (v.xhr.status == 200) {
 	            var response = JSON.parse(v.xhr.responseText);
 	            v.cache[val] = response;
-	            var mappedData = _this._mapData(response);
-	            var remappedData = _this.remapData(mappedData);
-	            var items = _this._filterData(val, remappedData);
+	            var data = _this._prepareData(_this.remapData(response));
+	            var items = _this._filterData(val, data);
 	            v.suggestedItems = _this._filterSetItems(items);
 	            _this.showSuggestions();
 	          } else if (v.xhr.status > 0) {
@@ -395,6 +394,23 @@ module.exports =
 	          }
 	          _this._abortXhr();
 	        }
+	      });
+	    }
+
+	    // Overwriteable method where you can change given data to appropriate format.
+	  }, {
+	    key: 'remapData',
+	    value: function remapData(data) {
+	      return data;
+	    }
+	  }, {
+	    key: '_prepareData',
+	    value: function _prepareData(data) {
+	      var _this2 = this;
+
+	      return data.map(function (item) {
+	        item[_this2.key] = guid();
+	        return item;
 	      });
 	    }
 	  }, {
@@ -405,23 +421,6 @@ module.exports =
 	      return data.filter(function (item) {
 	        return patt.test(item[o.itemData]);
 	      });
-	    }
-	  }, {
-	    key: '_mapData',
-	    value: function _mapData(data) {
-	      var _this2 = this;
-
-	      return data.map(function (item) {
-	        item[_this2.key] = guid();
-	        return item;
-	      });
-	    }
-
-	    // Overwriteable method where you can change given data to appropriate format.
-	  }, {
-	    key: 'remapData',
-	    value: function remapData(data) {
-	      return data;
 	    }
 	  }, {
 	    key: '_abortXhr',
@@ -692,17 +691,15 @@ module.exports =
 	            _this5._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
-	          var mappedData = this._mapData(o.items);
-	          var remappedData = this.remapData(mappedData);
-	          var items = this._filterData(val, remappedData);
+	          var data = this._prepareData(this.remapData(o.items));
+	          var items = this._filterData(val, data);
 	          v.suggestedItems = this._filterSetItems(items);
 	          this.showSuggestions();
 	        }
 	      } else {
-	        // work with cache data
-	        var mappedData = this._mapData(v.cache[val]);
-	        var remappedData = this.remapData(mappedData);
-	        var items = this._filterData(val, remappedData);
+	        // Work with cached data.
+	        var data = this._prepareData(this.remapData(v.cache[val]));
+	        var items = this._filterData(val, data);
 	        v.suggestedItems = this._filterSetItems(items);
 	        this.showSuggestions();
 	      }
