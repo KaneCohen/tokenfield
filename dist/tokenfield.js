@@ -626,6 +626,7 @@ module.exports =
 	            return false;
 	          }
 
+	          val = this.onInput(val);
 	          if (item) {
 	            this._addItem(item);
 	          } else if (val.length) {
@@ -673,13 +674,13 @@ module.exports =
 
 	      this._defocusItems();
 
-	      // We've got an input to deal with.
-	      var val = this.onInput(html.input.value, e);
+	      var val = this.onInput(html.input.value.trim(), e);
 
 	      if (val.length < o.minChars) {
 	        this.hideSuggestions();
 	        return false;
 	      }
+
 	      if (v.setItems.length == 1 && !o.multiple) {
 	        return false;
 	      }
@@ -984,7 +985,7 @@ module.exports =
 
 	        item = (_item = {
 	          isNew: true
-	        }, _defineProperty(_item, this.key, guid()), _defineProperty(_item, o.itemData, value.trim()), _item);
+	        }, _defineProperty(_item, this.key, guid()), _defineProperty(_item, o.itemData, value), _item);
 	        this.emit('newToken', this, item);
 	      }
 	      if (item) {
