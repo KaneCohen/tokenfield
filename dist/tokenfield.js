@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.2 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.3 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -674,7 +674,8 @@ module.exports =
 	      this._defocusItems();
 
 	      // We've got an input to deal with.
-	      var val = html.input.value;
+	      var val = this.onInput(html.input.value, e);
+
 	      if (val.length < o.minChars) {
 	        this.hideSuggestions();
 	        return false;
@@ -1053,6 +1054,11 @@ module.exports =
 	      }
 
 	      return itemHtml;
+	    }
+	  }, {
+	    key: 'onInput',
+	    value: function onInput(value, e) {
+	      return value;
 	    }
 	  }, {
 	    key: 'renderSetItemHtml',

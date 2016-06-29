@@ -125,3 +125,4 @@ Available methods are:
 | ---------- | ----------- |
 | remapData | Fired on every data request. Override it if you want to change structure of an available data - change props names, sanitize property values, remove props. Just make sure to return array of objects which would be consumed by the tokenfield instance. |
 | renderSetItemLabel | Fired on token item render. Override this method in order to change how label for each token is rendered |
+| onInput | Fired when you type something in the input field. Accepts value of the input field and event object. |
