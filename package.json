@@ -1,6 +1,6 @@
 {
   "name": "tokenfield",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Input field with tagging/token/chip capabilities written in raw JavaScript",
   "keywords": ["tagging", "tokens", "tokenizer", "chips", "autocomplete"],
   "author": {

@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.4 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.5 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -483,6 +483,7 @@ module.exports =
 	        });
 	        target.classList.add('selected');
 	        this._selectItem(target.key);
+	        this._refreshItemsSelection();
 	      }
 	    }
 	  }, {
@@ -600,14 +601,14 @@ module.exports =
 	          break;
 	        case 'up':
 	          if (this._vars.suggested) {
-	            this._selectPrevItem();
+	            this._selectPrevItem()._refreshItemsSelection();
 	            e.preventDefault();
 	          }
 	          this._defocusItems()._renderItems();
 	          break;
 	        case 'down':
 	          if (this._vars.suggested) {
-	            this._selectNextItem();
+	            this._selectNextItem()._refreshItemsSelection();
 	            e.preventDefault();
 	          }
 	          this._defocusItems()._renderItems();
@@ -634,7 +635,7 @@ module.exports =
 	          }
 
 	          if (item) {
-	            this._renderItems()._refreshInput(true).hideSuggestions();
+	            this._renderItems()._refreshInput(true).hideSuggestions()._deselectItems();
 	          }
 	          e.preventDefault();
 	          break;
@@ -725,6 +726,7 @@ module.exports =
 	    key: '_selectPrevItem',
 	    value: function _selectPrevItem() {
 	      var key = this.key;
+	      var o = this._options;
 	      var items = this._vars.suggestedItems;
 	      var index = this._getSelectedItemIndex();
 
@@ -734,7 +736,11 @@ module.exports =
 
 	      if (index !== null) {
 	        if (index === 0) {
-	          this._selectItem(items[items.length - 1][key]);
+	          if (o.newItems) {
+	            this._deselectItems();
+	          } else {
+	            this._selectItem(items[items.length - 1][key]);
+	          }
 	        } else {
 	          this._selectItem(items[index - 1][key]);
 	        }
@@ -748,6 +754,7 @@ module.exports =
 	    key: '_selectNextItem',
 	    value: function _selectNextItem() {
 	      var key = this.key;
+	      var o = this._options;
 	      var items = this._vars.suggestedItems;
 	      var index = this._getSelectedItemIndex();
 
@@ -757,7 +764,11 @@ module.exports =
 
 	      if (index !== null) {
 	        if (index === items.length - 1) {
-	          this._selectItem(items[0][key]);
+	          if (o.newItems) {
+	            this._deselectItems();
+	          } else {
+	            this._selectItem(items[0][key]);
+	          }
 	        } else {
 	          this._selectItem(items[index + 1][key]);
 	        }
@@ -833,13 +844,6 @@ module.exports =
 
 	      this._vars.suggestedItems.forEach(function (v) {
 	        v.selected = v[_this6.key] === key;
-	        if (v.el) {
-	          if (v.selected) {
-	            v.el.classList.add('selected');
-	          } else {
-	            v.el.classList.remove('selected');
-	          }
-	        }
 	      });
 	    }
 	  }, {
@@ -859,10 +863,21 @@ module.exports =
 	  }, {
 	    key: '_deselectItems',
 	    value: function _deselectItems() {
-	      this._vars.suggestedItems.every(function (v) {
+	      this._vars.suggestedItems.forEach(function (v) {
 	        v.selected = false;
 	      });
 	      return this;
+	    }
+	  }, {
+	    key: '_refreshItemsSelection',
+	    value: function _refreshItemsSelection() {
+	      this._vars.suggestedItems.forEach(function (v) {
+	        if (v.selected && v.el) {
+	          v.el.classList.add('selected');
+	        } else {
+	          v.el.classList.remove('selected');
+	        }
+	      });
 	    }
 	  }, {
 	    key: '_getSelectedItemIndex',
@@ -1079,6 +1094,11 @@ module.exports =
 	      var v = this._vars;
 	      var o = this._options;
 	      var html = this._html;
+	      var index = this._getSelectedItemIndex();
+
+	      if (!items.length) {
+	        return this;
+	      }
 
 	      html.suggestList.innerHTML = '';
 
@@ -1086,10 +1106,14 @@ module.exports =
 	        return this;
 	      }
 
+	      if (!o.newItems && index === 0) {
+	        items[0].selected = true;
+	      }
+
 	      items.every(function (item, k) {
 	        if (k >= o.maxSuggest) return false;
 
-	        var el = _this12.renderSuggestedItem(item, k);
+	        var el = _this12.renderSuggestedItem(item);
 	        item.el = el;
 	        html.suggestList.appendChild(el);
 	        return true;
@@ -1099,15 +1123,13 @@ module.exports =
 	    }
 	  }, {
 	    key: 'renderSuggestedItem',
-	    value: function renderSuggestedItem(item, k) {
+	    value: function renderSuggestedItem(item) {
 	      var o = this._options;
 	      var el = this._buildEl(this._templates.suggestItem);
 	      el.key = item[this.key];
 	      el.innerHTML = item[o.itemData];
 	      el.setAttribute('title', item[o.itemData]);
-
-	      if (k === 0) {
-	        item.selected = true;
+	      if (item.selected) {
 	        el.classList.add('selected');
 	      }
 	      return el;
