@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.5 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.6 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -1106,7 +1106,7 @@ module.exports =
 	        return this;
 	      }
 
-	      if (!o.newItems && index === 0) {
+	      if (!o.newItems && index === null) {
 	        items[0].selected = true;
 	      }
 
