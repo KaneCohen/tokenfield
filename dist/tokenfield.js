@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.6 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.7 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -146,18 +146,6 @@ module.exports =
 
 	function makeDefaultsAndOptions() {
 	  var _defaults = {
-	    keys: {
-	      8: 'delete', // backspace
-	      9: 'enter', // tab
-	      13: 'enter', // normal enter
-	      27: 'esc',
-	      37: 'left',
-	      38: 'up',
-	      39: 'right',
-	      40: 'down',
-	      46: 'delete',
-	      108: 'enter' // numpad enter
-	    },
 	    focusedItem: null,
 	    cache: {},
 	    timer: null,
@@ -174,9 +162,21 @@ module.exports =
 	    setItems: [], // List of set items.
 	    items: [], // List of available items to work with.
 	    // Example: [{id: 143, value: 'Hello World'}, {id: 144, value: 'Foo Bar'}].
-	    newItems: true, // Allow input (on enter) of new items.
+	    newItems: true, // Allow input (on delimiter key) of new items.
 	    multiple: true, // Accept multiple tags per field.
 	    maxItems: 0, // Set maximum allowed number of items.
+	    keys: { // Various action keys.
+	      8: 'delete', // Backspace
+	      27: 'esc',
+	      37: 'left',
+	      38: 'up',
+	      39: 'right',
+	      40: 'down',
+	      46: 'delete',
+	      9: 'delimiter', // Tab
+	      13: 'delimiter', // Enter
+	      108: 'delimiter' // Numpad Enter
+	    },
 	    remote: {
 	      type: 'GET', // Ajax request type.
 	      url: null, // Full server url.
@@ -223,6 +223,7 @@ module.exports =
 	    this.key = 'key_' + this.id;
 	    this._vars = Object.assign({}, _defaults);
 	    this._options = Object.assign({}, _options, options);
+	    this._options.keys = Object.assign({}, _options.keys, options.keys);
 	    this._options.remote = Object.assign({}, _options.remote, options.remote);
 	    this._templates = Object.assign({}, _templates, options.templates);
 	    this._vars.setItems = this._options.setItems || [];
@@ -559,7 +560,7 @@ module.exports =
 	        }, 1);
 	      }
 
-	      if (typeof v.keys[e.keyCode] !== 'undefined') {
+	      if (typeof o.keys[e.keyCode] !== 'undefined') {
 	        this._keyAction(e);
 	        return true;
 	      } else {
@@ -587,7 +588,7 @@ module.exports =
 	      var key = this.key;
 	      var o = this._options;
 	      var html = this._html;
-	      var keyName = v.keys[e.keyCode];
+	      var keyName = o.keys[e.keyCode];
 	      var val = html.input.value.trim();
 
 	      var selected = this._getSelectedItems();
@@ -619,7 +620,7 @@ module.exports =
 	        case 'right':
 	          this._focusNextItem();
 	          break;
-	        case 'enter':
+	        case 'delimiter':
 	          this._abortXhr();
 	          this._defocusItems();
 
