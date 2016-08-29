@@ -642,7 +642,7 @@ module.exports =
 	          break;
 	        case 'delete':
 	          this._abortXhr();
-	          if (val.length < o.minChars) {
+	          if (val.length < o.minChars || val.length === 0) {
 	            this.hideSuggestions();
 	            var focusedItem = this.getFocusedItem();
 	            if (o.mode === 'tokenfield' && !val.length && v.setItems.length) {
