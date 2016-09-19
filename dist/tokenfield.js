@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.7 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.9 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -875,7 +875,7 @@ module.exports =
 	      this._vars.suggestedItems.forEach(function (v) {
 	        if (v.selected && v.el) {
 	          v.el.classList.add('selected');
-	        } else {
+	        } else if (v.el) {
 	          v.el.classList.remove('selected');
 	        }
 	      });
