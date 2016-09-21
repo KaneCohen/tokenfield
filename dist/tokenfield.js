@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.10 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.11 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -435,7 +435,7 @@ module.exports =
 	  }, {
 	    key: '_filterSetItems',
 	    value: function _filterSetItems(items) {
-	      var key = this.key;
+	      var key = this._options.itemValue;
 	      var v = this._vars;
 	      if (!v.setItems.length) return items;
 
@@ -707,20 +707,25 @@ module.exports =
 	        v.suggestedItems = this._filterSetItems(items);
 	        this.showSuggestions();
 	      }
+
+	      return this;
 	    }
 	  }, {
 	    key: '_onClick',
 	    value: function _onClick(e) {
 	      var target = e.target;
+
 	      if (target.classList.contains('item-remove')) {
+
 	        var item = this._getItem(target.key);
-	        this._removeItem(target.key)._renderItems().focus();
+	        this._removeItem(target.key)._renderItems()._keyInput(e).focus();
 	      } else if (target.classList.contains('tokenfield-suggest-item')) {
+
 	        var item = this._getSuggestedItem(target.key);
 	        this._addItem(item)._renderItems()._refreshInput(true).hideSuggestions();
 	      } else {
-	        this.focus();
-	        this._keyInput(e);
+
+	        this._keyInput(e).focus();
 	      }
 	    }
 	  }, {
@@ -953,8 +958,10 @@ module.exports =
 	      if (!this._getItem(item[this.key])) {
 	        this.emit('addToken', this, item);
 	        if (!this._options.maxItems || this._options.maxItems && this._vars.setItems.length < this._options.maxItems) {
-	          this._vars.setItems.push(item);
-	          this.emit('addedToken', this, item);
+	          item.selected = false;
+	          var clonedItem = Object.assign({}, item);
+	          this._vars.setItems.push(clonedItem);
+	          this.emit('addedToken', this, clonedItem);
 	          this.emit('change', this);
 	        }
 	      }
