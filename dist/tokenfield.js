@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.9 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.10 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -226,7 +226,7 @@ module.exports =
 	    this._options.keys = Object.assign({}, _options.keys, options.keys);
 	    this._options.remote = Object.assign({}, _options.remote, options.remote);
 	    this._templates = Object.assign({}, _templates, options.templates);
-	    this._vars.setItems = this._options.setItems || [];
+	    this._vars.setItems = this._prepareData(this._options.setItems || []);
 	    this._html = {};
 
 	    var o = this._options;
