@@ -47,7 +47,7 @@ module.exports =
 
 	/**
 	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.11 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.3.12 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -718,14 +718,17 @@ module.exports =
 	      if (target.classList.contains('item-remove')) {
 
 	        var item = this._getItem(target.key);
-	        this._removeItem(target.key)._renderItems()._keyInput(e).focus();
+	        this._removeItem(target.key)._renderItems()._keyInput(e);
+
+	        this.focus();
 	      } else if (target.classList.contains('tokenfield-suggest-item')) {
 
 	        var item = this._getSuggestedItem(target.key);
 	        this._addItem(item)._renderItems()._refreshInput(true).hideSuggestions();
 	      } else {
 
-	        this._keyInput(e).focus();
+	        this._keyInput(e);
+	        this.focus();
 	      }
 	    }
 	  }, {
