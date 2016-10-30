@@ -45,33 +45,33 @@ module.exports =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * Input field with tagging/token/chip capabilities written in raw JavaScript
-	 * tokenfield 0.3.12 <https://github.com/KaneCohen/tokenfield>
-	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
-	 * Available under BSD-3-Clause license
-	 */
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x8, _x9, _x10) { var _again = true; _function: while (_again) { var object = _x8, property = _x9, receiver = _x10; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x8 = parent; _x9 = property; _x10 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _events = __webpack_require__(1);
 
 	var _events2 = _interopRequireDefault(_events);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.3.13 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
 
 	var _tokenfields = {};
 
@@ -84,7 +84,7 @@ module.exports =
 	  containerTokenfield: '<div class="tokenfield tokenfield-mode-tokens">\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n    </div>',
 	  containerList: '<div class="tokenfield tokenfield-mode-list">\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n    </div>',
 	  suggestItem: '<li class="tokenfield-suggest-item"></li>',
-	  setItem: '<li class="tokenfield-set-item">\n      <span class="item-label"></span>\n      <span class="item-remove">×</span>\n      <input class="item-input" type="hidden" />\n    </li>'
+	  setItem: '<li class="tokenfield-set-item">\n      <span class="item-label"></span>\n      <span class="item-remove">\xD7</span>\n      <input class="item-input" type="hidden" />\n    </li>'
 	};
 
 	function guid() {
@@ -121,8 +121,8 @@ module.exports =
 	}
 
 	function ajax(params) {
-	  var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	  var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
 	  var xhr = new XMLHttpRequest();
 	  var url = options.url;
@@ -204,32 +204,31 @@ module.exports =
 	  return { _defaults: _defaults, _options: _options };
 	}
 
-	var Tokenfield = (function (_EventEmitter) {
+	var Tokenfield = function (_EventEmitter) {
 	  _inherits(Tokenfield, _EventEmitter);
 
 	  function Tokenfield() {
-	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	    _classCallCheck(this, Tokenfield);
 
-	    _get(Object.getPrototypeOf(Tokenfield.prototype), 'constructor', this).call(this);
+	    var _this = _possibleConstructorReturn(this, (Tokenfield.__proto__ || Object.getPrototypeOf(Tokenfield)).call(this));
 
-	    var _makeDefaultsAndOptions = makeDefaultsAndOptions();
+	    var _makeDefaultsAndOptio = makeDefaultsAndOptions(),
+	        _defaults = _makeDefaultsAndOptio._defaults,
+	        _options = _makeDefaultsAndOptio._options;
 
-	    var _defaults = _makeDefaultsAndOptions._defaults;
-	    var _options = _makeDefaultsAndOptions._options;
+	    _this.id = guid();
+	    _this.key = 'key_' + _this.id;
+	    _this._vars = Object.assign({}, _defaults);
+	    _this._options = Object.assign({}, _options, options);
+	    _this._options.keys = Object.assign({}, _options.keys, options.keys);
+	    _this._options.remote = Object.assign({}, _options.remote, options.remote);
+	    _this._templates = Object.assign({}, _templates, options.templates);
+	    _this._vars.setItems = _this._prepareData(_this._options.setItems || []);
+	    _this._html = {};
 
-	    this.id = guid();
-	    this.key = 'key_' + this.id;
-	    this._vars = Object.assign({}, _defaults);
-	    this._options = Object.assign({}, _options, options);
-	    this._options.keys = Object.assign({}, _options.keys, options.keys);
-	    this._options.remote = Object.assign({}, _options.remote, options.remote);
-	    this._templates = Object.assign({}, _templates, options.templates);
-	    this._vars.setItems = this._prepareData(this._options.setItems || []);
-	    this._html = {};
-
-	    var o = this._options;
+	    var o = _this._options;
 
 	    if (o.el) {
 	      var el = o.el;
@@ -239,8 +238,8 @@ module.exports =
 	          throw new Error('Selector: DOM Element ' + o.el + ' not found.');
 	        }
 	      }
-	      el.tokenfield = this;
-	      this.el = el;
+	      el.tokenfield = _this;
+	      _this.el = el;
 	    } else {
 	      throw new Error('Cannot create tokenfield without DOM Element.');
 	    }
@@ -249,9 +248,10 @@ module.exports =
 	      o.placeholder = o.el.placeholder || '';
 	    }
 
-	    _tokenfields[this.id] = this;
+	    _tokenfields[_this.id] = _this;
 
-	    this._render();
+	    _this._render();
+	    return _this;
 	  }
 
 	  _createClass(Tokenfield, [{
@@ -320,7 +320,7 @@ module.exports =
 	  }, {
 	    key: '_refreshInput',
 	    value: function _refreshInput() {
-	      var focus = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+	      var focus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 	      var v = this._vars;
 	      var html = this._html;
@@ -340,7 +340,7 @@ module.exports =
 	  }, {
 	    key: '_resizeInput',
 	    value: function _resizeInput() {
-	      var val = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	      var val = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
 	      var html = this._html;
 	      var b = this._getBounds();
@@ -363,7 +363,7 @@ module.exports =
 	  }, {
 	    key: '_fetchData',
 	    value: function _fetchData(val) {
-	      var _this = this;
+	      var _this2 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -386,19 +386,20 @@ module.exports =
 	          if (v.xhr.status == 200) {
 	            var response = JSON.parse(v.xhr.responseText);
 	            v.cache[val] = response;
-	            var data = _this._prepareData(_this.remapData(response));
-	            var items = _this._filterData(val, data);
-	            v.suggestedItems = _this._filterSetItems(items);
-	            _this.showSuggestions();
+	            var data = _this2._prepareData(_this2.remapData(response));
+	            var items = _this2._filterData(val, data);
+	            v.suggestedItems = _this2._filterSetItems(items);
+	            _this2.showSuggestions();
 	          } else if (v.xhr.status > 0) {
 	            throw new Error('Error while loading remote data.');
 	          }
-	          _this._abortXhr();
+	          _this2._abortXhr();
 	        }
 	      });
 	    }
 
 	    // Overwriteable method where you can change given data to appropriate format.
+
 	  }, {
 	    key: 'remapData',
 	    value: function remapData(data) {
@@ -407,10 +408,10 @@ module.exports =
 	  }, {
 	    key: '_prepareData',
 	    value: function _prepareData(data) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      return data.map(function (item) {
-	        item[_this2.key] = guid();
+	        item[_this3.key] = guid();
 	        return item;
 	      });
 	    }
@@ -527,16 +528,16 @@ module.exports =
 	      }
 
 	      if (tokenfield) {
-	        for (var key in _tokenfields) {
-	          if (key !== tokenfield.id) {
-	            _tokenfields[key].hideSuggestions();
-	            _tokenfields[key].blur();
+	        for (var _key in _tokenfields) {
+	          if (_key !== tokenfield.id) {
+	            _tokenfields[_key].hideSuggestions();
+	            _tokenfields[_key].blur();
 	          }
 	        }
 	      } else {
-	        for (var key in _tokenfields) {
-	          _tokenfields[key].hideSuggestions();
-	          _tokenfields[key].blur();
+	        for (var _key2 in _tokenfields) {
+	          _tokenfields[_key2].hideSuggestions();
+	          _tokenfields[_key2].blur();
 	        }
 	      }
 	    }
@@ -548,7 +549,7 @@ module.exports =
 	  }, {
 	    key: '_onKeyDown',
 	    value: function _onKeyDown(e) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -556,7 +557,7 @@ module.exports =
 
 	      if (o.mode === 'tokenfield') {
 	        setTimeout(function () {
-	          _this3._resizeInput(html.input.value);
+	          _this4._resizeInput(html.input.value);
 	        }, 1);
 	      }
 
@@ -574,14 +575,14 @@ module.exports =
 	        e.preventDefault();
 	      } else {
 	        setTimeout(function () {
-	          _this3._keyInput(e);
+	          _this4._keyInput(e);
 	        }, 1);
 	      }
 	    }
 	  }, {
 	    key: '_keyAction',
 	    value: function _keyAction(e) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var item = null;
 	      var v = this._vars;
@@ -657,7 +658,7 @@ module.exports =
 	            this._renderItems()._refreshInput();
 	          } else {
 	            v.timer = setTimeout(function () {
-	              _this4._keyInput(e);
+	              _this5._keyInput(e);
 	            }, o.delay);
 	          }
 	          break;
@@ -668,7 +669,7 @@ module.exports =
 	  }, {
 	    key: '_keyInput',
 	    value: function _keyInput(e) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -692,7 +693,7 @@ module.exports =
 	        // Get new data.
 	        if (o.remote.url) {
 	          v.timer = setTimeout(function () {
-	            _this5._fetchData(val);
+	            _this6._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
 	          var data = this._prepareData(this.remapData(o.items));
@@ -702,9 +703,9 @@ module.exports =
 	        }
 	      } else {
 	        // Work with cached data.
-	        var data = this._prepareData(this.remapData(v.cache[val]));
-	        var items = this._filterData(val, data);
-	        v.suggestedItems = this._filterSetItems(items);
+	        var _data = this._prepareData(this.remapData(v.cache[val]));
+	        var _items = this._filterData(val, _data);
+	        v.suggestedItems = this._filterSetItems(_items);
 	        this.showSuggestions();
 	      }
 
@@ -717,7 +718,6 @@ module.exports =
 
 	      if (target.classList.contains('item-remove')) {
 
-	        var item = this._getItem(target.key);
 	        this._removeItem(target.key)._renderItems()._keyInput(e);
 
 	        this.focus();
@@ -849,19 +849,19 @@ module.exports =
 	  }, {
 	    key: '_selectItem',
 	    value: function _selectItem(key) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      this._vars.suggestedItems.forEach(function (v) {
-	        v.selected = v[_this6.key] === key;
+	        v.selected = v[_this7.key] === key;
 	      });
 	    }
 	  }, {
 	    key: '_deselectItem',
 	    value: function _deselectItem(key) {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      this._vars.suggestedItems.every(function (v) {
-	        if (v[_this7.key] === key) {
+	        if (v[_this8.key] === key) {
 	          v.selected = false;
 	          return false;
 	        }
@@ -917,7 +917,7 @@ module.exports =
 	  }, {
 	    key: '_getItem',
 	    value: function _getItem(val) {
-	      var prop = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+	      var prop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
 	      if (prop === null) {
 	        prop = this.key;
@@ -930,24 +930,24 @@ module.exports =
 	  }, {
 	    key: '_getSuggestedItem',
 	    value: function _getSuggestedItem(key) {
-	      var _this8 = this;
+	      var _this9 = this;
 
 	      var items = this._vars.suggestedItems.filter(function (v) {
-	        return v[_this8.key] === key;
+	        return v[_this9.key] === key;
 	      });
 	      return items.length ? items[0] : null;
 	    }
 	  }, {
 	    key: '_removeItem',
 	    value: function _removeItem(key) {
-	      var _this9 = this;
+	      var _this10 = this;
 
 	      this._vars.setItems.every(function (item, k) {
-	        if (item[_this9.key] === key) {
-	          _this9.emit('removeToken', _this9, item);
-	          _this9._vars.setItems.splice(k, 1);
-	          _this9.emit('removedToken', _this9);
-	          _this9.emit('change', _this9);
+	        if (item[_this10.key] === key) {
+	          _this10.emit('removeToken', _this10, item);
+	          _this10._vars.setItems.splice(k, 1);
+	          _this10.emit('removedToken', _this10);
+	          _this10.emit('change', _this10);
 	          return false;
 	        }
 	        return true;
@@ -986,10 +986,10 @@ module.exports =
 	  }, {
 	    key: '_focusItem',
 	    value: function _focusItem(key) {
-	      var _this10 = this;
+	      var _this11 = this;
 
 	      this._vars.setItems.forEach(function (v) {
-	        v.focused = v[_this10.key] === key;
+	        v.focused = v[_this11.key] === key;
 	      });
 	      return this;
 	    }
@@ -1022,6 +1022,7 @@ module.exports =
 	    }
 
 	    // Wrapper for build function in case some of the functions are overwritten.
+
 	  }, {
 	    key: '_buildEl',
 	    value: function _buildEl(html) {
@@ -1035,7 +1036,7 @@ module.exports =
 	  }, {
 	    key: '_renderItems',
 	    value: function _renderItems() {
-	      var _this11 = this;
+	      var _this12 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1044,7 +1045,7 @@ module.exports =
 	      html.items.innerHTML = '';
 	      if (v.setItems.length) {
 	        v.setItems.forEach(function (item) {
-	          var itemEl = _this11._renderItem(item);
+	          var itemEl = _this12._renderItem(item);
 	          html.items.appendChild(itemEl);
 	          item.el = itemEl;
 	          if (item.focused) {
@@ -1074,7 +1075,7 @@ module.exports =
 	      remove.key = item[this.key];
 	      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + '[]');
 
-	      input.value = item[item.isNew ? o.newitemValue : o.itemValue] || null;
+	      input.value = item[item.isNew ? o.newItemValue : o.itemValue] || null;
 	      label.textContent = this.renderSetItemLabel(item);
 	      if (item.focused) {
 	        itemHtml.classList.add('focused');
@@ -1100,7 +1101,7 @@ module.exports =
 	  }, {
 	    key: 'renderSuggestions',
 	    value: function renderSuggestions(items) {
-	      var _this12 = this;
+	      var _this13 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1124,7 +1125,7 @@ module.exports =
 	      items.every(function (item, k) {
 	        if (k >= o.maxSuggest) return false;
 
-	        var el = _this12.renderSuggestedItem(item);
+	        var el = _this13.renderSuggestedItem(item);
 	        item.el = el;
 	        html.suggestList.appendChild(el);
 	        return true;
@@ -1181,7 +1182,7 @@ module.exports =
 	  }, {
 	    key: 'setItems',
 	    value: function setItems() {
-	      var items = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	      var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	      this._vars.setItems = items;
 	      this._refreshInput(true);
@@ -1232,10 +1233,9 @@ module.exports =
 	  }]);
 
 	  return Tokenfield;
-	})(_events2['default']);
+	}(_events2.default);
 
-	exports['default'] = Tokenfield;
-	module.exports = exports['default'];
+	exports.default = Tokenfield;
 
 /***/ },
 /* 1 */
