@@ -27,7 +27,7 @@ var targets = [
 
 var baseConfig = {
   debug: false,
-  entry: './lib/tokenfield',
+  entry: './index',
   module: {
     loaders: [
       {
