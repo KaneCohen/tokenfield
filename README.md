@@ -62,7 +62,9 @@ would send an additional array which would contain an array of strings.
 | multiple | bool | true | Option to allow multiple tokens in the field. |
 | maxItems | integer | 0 | Option to limit number of items. Set to 0 to remove the limit. |
 | remote | object | | Details on that - below in Autocomplete section. |
+| addItemOnBlur | bool | `false` | If set to true, will add new item to the tokenfield on input blur. Either sets new item or first match from suggested list. |
 | placeholder | null or string | null | Set a placeholder that will be shown in the input. If set to null, will try to use placeholder attribute from the original element set in `el` |
+| inputType | string | `'text'` | Specifies HTML `type` attribute for the input element. |
 | minChars | integer | 2 | Specifies how many characters user has to input before autocomplete suggester is shown. |
 | maxSuggests | integer | 10 | Specifies how many suggestions should be shown. |
 | itemLabel | string | `'name'` | Property of an item object which is used to display text in tokens. |
