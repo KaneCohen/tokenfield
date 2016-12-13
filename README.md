@@ -55,6 +55,7 @@ would send an additional array which would contain an array of strings.
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | el | string or DOM node | null | DOM element or string with selector pointing at an element you want to turn into tokenfield. |
+| form | bool, string or DOM node | true | Listens to reset event on the specified form. If set to `true` listens to immediate parent form. |
 | items | array | [] | Array of objects amongst which autocomplete will try to find a match. Default format might look like this: `[{id: 1, name: 'foo'}, {id: 2, name: 'bar'}]` |
 | setItems | array | [] | Array of objects which would be displayed as selected after Tokenfield has been created. |
 | newItems | bool | true | Option to allow user to add custom tokens instead of using preset list of tokens or tokens retrieved from the server. |

@@ -74,7 +74,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.3.14 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.4.0 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -165,6 +165,8 @@ module.exports =
 
 	  var _options = {
 	    el: null,
+	    form: true, // Listens to reset event on the specifiedform. If set to true listens to
+	    // immediate parent form. Also accepts selectors or elements.
 	    mode: 'tokenfield', // Display mode: tokenfield or list
 	    setItems: [], // List of set items.
 	    items: [], // List of available items to work with.
@@ -233,26 +235,51 @@ module.exports =
 	    _this._options.remote = Object.assign({}, _options.remote, options.remote);
 	    _this._templates = Object.assign({}, _templates, options.templates);
 	    _this._vars.setItems = _this._prepareData(_this._options.setItems || []);
+	    _this._form = false;
 	    _this._html = {};
 
 	    var o = _this._options;
 
-	    if (o.el) {
-	      var el = o.el;
-	      if (typeof el == 'string') {
-	        el = document.querySelector(o.el);
-	        if (!el) {
-	          throw new Error('Selector: DOM Element ' + o.el + ' not found.');
-	        }
+	    if (o.el.nodeName) {
+	      _this.el = o.el;
+	    } else if (typeof o.el == 'string') {
+	      var el = document.querySelector(o.el);
+	      if (!el) {
+	        throw new Error('Selector: DOM Element ' + o.el + ' not found.');
 	      }
-	      el.tokenfield = _this;
 	      _this.el = el;
 	    } else {
 	      throw new Error('Cannot create tokenfield without DOM Element.');
 	    }
 
+	    _this.el.tokenfield = _this;
+
 	    if (o.placeholder === null) {
 	      o.placeholder = o.el.placeholder || '';
+	    }
+
+	    if (o.form) {
+	      var form = false;
+	      if (o.form.nodeName) {
+	        form = o.form;
+	      } else if (o.form === true) {
+	        var node = _this.el;
+	        while (node.parentNode) {
+	          if (node.nodeName === 'FORM') {
+	            form = node;
+	            break;
+	          }
+	          node = node.parentNode;
+	        }
+	      } else if (typeof form == 'string') {
+	        form = document.querySelector(form);
+	        if (!form) {
+	          throw new Error('Selector: DOM Element ' + o.form + ' not found.');
+	        }
+	      }
+	      _this._form = form;
+	    } else {
+	      throw new Error('Cannot create tokenfield without DOM Element.');
 	    }
 
 	    _tokenfields[_this.id] = _this;
@@ -285,7 +312,7 @@ module.exports =
 	      // Set tokenfield in DOM.
 	      html.container.tokenfield = this;
 	      o.el.parentElement.insertBefore(html.container, o.el);
-	      html.container.appendChild(o.el);
+	      html.container.insertBefore(o.el, html.container.firstChild);
 
 	      this._setEvents();
 	      this._renderItems();
@@ -310,8 +337,8 @@ module.exports =
 	        whiteSpace: 'pre',
 	        maxWidth: b.width - compensate + 'px',
 	        position: 'fixed',
-	        top: -100 + 'px',
-	        left: -1000 + 'px',
+	        top: -10000 + 'px',
+	        left: 10000 + 'px',
 	        fontSize: style.fontSize,
 	        paddingLeft: style.paddingLeft,
 	        paddingRight: style.paddingRight
@@ -418,8 +445,7 @@ module.exports =
 	      var _this3 = this;
 
 	      return data.map(function (item) {
-	        item[_this3.key] = guid();
-	        return item;
+	        return Object.assign({}, item, _defineProperty({}, _this3.key, guid()));
 	      });
 	    }
 	  }, {
@@ -468,6 +494,7 @@ module.exports =
 	      v.events.onMouseOver = this._onMouseOver.bind(this);
 	      v.events.onFocus = this._onFocus.bind(this);
 	      v.events.onResize = this._onResize.bind(this);
+	      v.events.onReset = this._onReset.bind(this);
 
 	      html.container.addEventListener('click', v.events.onClick);
 
@@ -476,6 +503,10 @@ module.exports =
 	        document.addEventListener('mousedown', v.events.onMouseDown);
 	        document.addEventListener('touchstart', v.events.onMouseDown);
 	        window.addEventListener('resize', v.events.onResize);
+	      }
+
+	      if (this._form && this._form.nodeName) {
+	        this._form.addEventListener('reset', v.events.onReset);
 	      }
 
 	      html.suggestList.addEventListener('mouseover', v.events.onMouseOver);
@@ -494,6 +525,11 @@ module.exports =
 	        this._selectItem(target.key);
 	        this._refreshItemsSelection();
 	      }
+	    }
+	  }, {
+	    key: '_onReset',
+	    value: function _onReset() {
+	      this.setItems(this._options.setItems);
 	    }
 	  }, {
 	    key: '_onFocus',
@@ -551,7 +587,9 @@ module.exports =
 	  }, {
 	    key: '_onResize',
 	    value: function _onResize() {
-	      this._resizeInput(this._html.input.value);
+	      for (var key in _tokenfields) {
+	        _tokenfields[key]._resizeInput(_tokenfields[key]._html.input.value);
+	      }
 	    }
 	  }, {
 	    key: '_onKeyDown',
@@ -1232,6 +1270,10 @@ module.exports =
 	      if (Object.keys(_tokenfields).length === 1) {
 	        document.removeEventListener('mousedown', this._vars.events.onMouseDown);
 	        window.removeEventListener('resize', this._vars.events.onResize);
+	      }
+
+	      if (this._form && this._form.nodeName) {
+	        this._form.removeEventListener('reset', this._vars.events.onReset);
 	      }
 
 	      delete _tokenfields[this.id];
