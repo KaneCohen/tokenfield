@@ -63,6 +63,8 @@ would send an additional array which would contain an array of strings.
 | maxItems | integer | 0 | Option to limit number of items. Set to 0 to remove the limit. |
 | remote | object | | Details on that - below in Autocomplete section. |
 | addItemOnBlur | bool | `false` | If set to true, will add new item to the tokenfield on input blur. Either sets new item or first match from suggested list. |
+| delimiters | array | [] | Option to specify certain characters/sets of characters to be used as delimiters during tokenization or input events on tokenfield. |
+| addItemsOnPaste | bool | `false` | If set to true, will add new item to the tokenfield on paste. Tokenization happens using delimiters options listed above. |
 | placeholder | null or string | null | Set a placeholder that will be shown in the input. If set to null, will try to use placeholder attribute from the original element set in `el` |
 | inputType | string | `'text'` | Specifies HTML `type` attribute for the input element. |
 | minChars | integer | 2 | Specifies how many characters user has to input before autocomplete suggester is shown. |

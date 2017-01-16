@@ -74,7 +74,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.4.1 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.5.0 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -160,7 +160,8 @@ module.exports =
 	    suggested: false,
 	    suggestedItems: [],
 	    setItems: [],
-	    events: {}
+	    events: {},
+	    delimiters: {}
 	  };
 
 	  var _options = {
@@ -169,6 +170,7 @@ module.exports =
 	    // immediate parent form. Also accepts selectors or elements.
 	    mode: 'tokenfield', // Display mode: tokenfield or list.
 	    addItemOnBlur: false, // Add token if input field loses focus.
+	    addItemsOnPaste: false, // Add tokens using `delimiters` option below to tokenize given string.
 	    setItems: [], // List of set items.
 	    items: [], // List of available items to work with.
 	    // Example: [{id: 143, value: 'Hello World'}, {id: 144, value: 'Foo Bar'}].
@@ -187,6 +189,7 @@ module.exports =
 	      13: 'delimiter', // Enter
 	      108: 'delimiter' // Numpad Enter
 	    },
+	    delimiters: [], // Array of strings which act as delimiters during tokenization.
 	    remote: {
 	      type: 'GET', // Ajax request type.
 	      url: null, // Full server url.
@@ -243,6 +246,11 @@ module.exports =
 	    _this._html = {};
 
 	    var o = _this._options;
+
+	    // Make a hash map to simplify filtering later.
+	    o.delimiters.forEach(function (delimiter) {
+	      _this._vars.delimiters[delimiter] = true;
+	    });
 
 	    if (o.el.nodeName) {
 	      _this.el = o.el;
@@ -541,6 +549,7 @@ module.exports =
 	    value: function _onFocus(e) {
 	      var v = this._vars;
 	      var html = this._html;
+	      var o = this._options;
 	      v.events.onKeyDown = this._onKeyDown.bind(this);
 	      v.events.onFocusOut = this._onFocusOut.bind(this);
 
@@ -548,9 +557,14 @@ module.exports =
 	      html.input.addEventListener('keydown', v.events.onKeyDown);
 	      html.input.addEventListener('focusout', v.events.onFocusOut);
 
+	      if (o.addItemsOnPaste) {
+	        v.events.onPaste = this._onPaste.bind(this);
+	        html.input.addEventListener('paste', v.events.onPaste);
+	      }
+
 	      this.focus();
 	      this._focused = true;
-	      if (html.input.value.trim().length >= this._options.minChars) {
+	      if (html.input.value.trim().length >= o.minChars) {
 	        this.showSuggestions();
 	      }
 	    }
@@ -562,6 +576,10 @@ module.exports =
 	      var html = this._html;
 	      html.input.removeEventListener('keydown', v.events.onKeyDown);
 	      html.input.removeEventListener('focusout', v.events.onFocusOut);
+
+	      if (typeof v.events.onPaste !== 'undefined') {
+	        html.input.removeEventListener('paste', v.events.onPaste);
+	      }
 
 	      var canAddItem = !o.maxItems || o.maxItems && v.setItems.length < o.maxItems;
 
@@ -604,9 +622,42 @@ module.exports =
 	      }
 	    }
 	  }, {
+	    key: '_onPaste',
+	    value: function _onPaste(e) {
+	      var _this4 = this;
+
+	      var v = this._vars;
+	      var o = this._options;
+	      var val = e.clipboardData.getData('text');
+	      var tokens = [val];
+
+	      // Break input using delimiters option.
+	      if (o.delimiters.length) {
+	        var search = o.delimiters.join('|');
+	        var splitRegex = new RegExp('(' + search + ')', 'ig');
+	        tokens = val.split(splitRegex);
+	      }
+
+	      var items = tokens.map(function (token) {
+	        return token.trim();
+	      }).filter(function (token) {
+	        return token.length > 0 && token.length >= o.minChars && typeof v.delimiters[token] === 'undefined';
+	      }).map(function (token) {
+	        return _this4._newItem(token);
+	      });
+
+	      if (items.length) {
+	        setTimeout(function () {
+	          _this4._renderItems()._refreshInput(true).hideSuggestions()._deselectItems().blur();
+	        }, 1);
+
+	        e.preventDefault();
+	      }
+	    }
+	  }, {
 	    key: '_onKeyDown',
 	    value: function _onKeyDown(e) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -614,11 +665,11 @@ module.exports =
 
 	      if (o.mode === 'tokenfield') {
 	        setTimeout(function () {
-	          _this4._resizeInput(html.input.value);
+	          _this5._resizeInput(html.input.value);
 	        }, 1);
 	      }
 
-	      if (typeof o.keys[e.keyCode] !== 'undefined') {
+	      if (typeof o.keys[e.keyCode] !== 'undefined' || o.delimiters.includes(e.key)) {
 	        this._keyAction(e);
 	        return true;
 	      } else {
@@ -632,14 +683,14 @@ module.exports =
 	        e.preventDefault();
 	      } else {
 	        setTimeout(function () {
-	          _this4._keyInput(e);
+	          _this5._keyInput(e);
 	        }, 1);
 	      }
 	    }
 	  }, {
 	    key: '_keyAction',
 	    value: function _keyAction(e) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var item = null;
 	      var v = this._vars;
@@ -648,6 +699,10 @@ module.exports =
 	      var html = this._html;
 	      var keyName = o.keys[e.keyCode];
 	      var val = html.input.value.trim();
+
+	      if (o.delimiters.includes(e.key) && typeof keyName === 'undefined') {
+	        keyName = 'delimiter';
+	      }
 
 	      var selected = this._getSelectedItems();
 	      if (selected.length) {
@@ -715,7 +770,7 @@ module.exports =
 	            this._renderItems()._refreshInput();
 	          } else {
 	            v.timer = setTimeout(function () {
-	              _this5._keyInput(e);
+	              _this6._keyInput(e);
 	            }, o.delay);
 	          }
 	          break;
@@ -726,7 +781,7 @@ module.exports =
 	  }, {
 	    key: '_keyInput',
 	    value: function _keyInput(e) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -750,7 +805,7 @@ module.exports =
 	        // Get new data.
 	        if (o.remote.url) {
 	          v.timer = setTimeout(function () {
-	            _this6._fetchData(val);
+	            _this7._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
 	          var data = this._prepareData(this.remapData(o.items));
@@ -906,19 +961,19 @@ module.exports =
 	  }, {
 	    key: '_selectItem',
 	    value: function _selectItem(key) {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      this._vars.suggestedItems.forEach(function (v) {
-	        v.selected = v[_this7.key] === key;
+	        v.selected = v[_this8.key] === key;
 	      });
 	    }
 	  }, {
 	    key: '_deselectItem',
 	    value: function _deselectItem(key) {
-	      var _this8 = this;
+	      var _this9 = this;
 
 	      this._vars.suggestedItems.every(function (v) {
-	        if (v[_this8.key] === key) {
+	        if (v[_this9.key] === key) {
 	          v.selected = false;
 	          return false;
 	        }
@@ -1002,14 +1057,14 @@ module.exports =
 	  }, {
 	    key: '_removeItem',
 	    value: function _removeItem(key) {
-	      var _this9 = this;
+	      var _this10 = this;
 
 	      this._vars.setItems.every(function (item, k) {
-	        if (item[_this9.key] === key) {
-	          _this9.emit('removeToken', _this9, item);
-	          _this9._vars.setItems.splice(k, 1);
-	          _this9.emit('removedToken', _this9);
-	          _this9.emit('change', _this9);
+	        if (item[_this10.key] === key) {
+	          _this10.emit('removeToken', _this10, item);
+	          _this10._vars.setItems.splice(k, 1);
+	          _this10.emit('removedToken', _this10);
+	          _this10.emit('change', _this10);
 	          return false;
 	        }
 	        return true;
@@ -1048,10 +1103,10 @@ module.exports =
 	  }, {
 	    key: '_focusItem',
 	    value: function _focusItem(key) {
-	      var _this10 = this;
+	      var _this11 = this;
 
 	      this._vars.setItems.forEach(function (v) {
-	        v.focused = v[_this10.key] === key;
+	        v.focused = v[_this11.key] === key;
 	      });
 	      return this;
 	    }
@@ -1103,7 +1158,7 @@ module.exports =
 	  }, {
 	    key: '_renderItems',
 	    value: function _renderItems() {
-	      var _this11 = this;
+	      var _this12 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1112,7 +1167,7 @@ module.exports =
 	      html.items.innerHTML = '';
 	      if (v.setItems.length) {
 	        v.setItems.forEach(function (item) {
-	          var itemEl = _this11._renderItem(item);
+	          var itemEl = _this12._renderItem(item);
 	          html.items.appendChild(itemEl);
 	          item.el = itemEl;
 	          if (item.focused) {
@@ -1168,7 +1223,7 @@ module.exports =
 	  }, {
 	    key: 'renderSuggestions',
 	    value: function renderSuggestions(items) {
-	      var _this12 = this;
+	      var _this13 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1192,7 +1247,7 @@ module.exports =
 	      items.every(function (item, k) {
 	        if (k >= o.maxSuggest) return false;
 
-	        var el = _this12.renderSuggestedItem(item);
+	        var el = _this13.renderSuggestedItem(item);
 	        item.el = el;
 	        html.suggestList.appendChild(el);
 	        return true;
