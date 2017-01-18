@@ -58,6 +58,8 @@ module.exports =
 	  value: true
 	});
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _events = __webpack_require__(2);
@@ -74,7 +76,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.5.0 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.0 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -96,6 +98,15 @@ module.exports =
 
 	function guid() {
 	  return ((1 + Math.random()) * 0x10000 | 0).toString(16) + ((1 + Math.random()) * 0x10000 | 0).toString(16);
+	}
+
+	function getPath(node) {
+	  var nodes = [node];
+	  while (node.parentNode) {
+	    node = node.parentNode;
+	    nodes.push(node);
+	  }
+	  return nodes;
 	}
 
 	function build(html, all) {
@@ -178,6 +189,8 @@ module.exports =
 	    multiple: true, // Accept multiple tags per field.
 	    maxItems: 0, // Set maximum allowed number of items.
 	    keys: { // Various action keys.
+	      17: 'ctrl',
+	      16: 'shift',
 	      8: 'delete', // Backspace
 	      27: 'esc',
 	      37: 'left',
@@ -367,15 +380,12 @@ module.exports =
 	  }, {
 	    key: '_refreshInput',
 	    value: function _refreshInput() {
-	      var focus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+	      var empty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	      var v = this._vars;
 	      var html = this._html;
 
-	      html.input.value = '';
-	      if (focus === true) {
-	        this.focus();
-	      }
+	      if (empty) html.input.value = '';
 
 	      if (this._options.mode === 'tokenfield') {
 	        this._resizeInput();
@@ -392,7 +402,9 @@ module.exports =
 	      var html = this._html;
 	      var b = this._getBounds();
 	      var style = window.getComputedStyle(html.container);
-	      var compensate = parseInt(style.paddingLeft, 10) + parseInt(style.paddingRight, 10);
+	      var compensate = parseInt(style.paddingRight, 10) + parseInt(style.borderRightWidth, 10);
+
+	      var fullCompensate = compensate + parseInt(style.paddingLeft, 10) + parseInt(style.borderLeftWidth, 10);
 
 	      html.sizer.innerHTML = val;
 	      html.input.style.width = '20px';
@@ -402,7 +414,7 @@ module.exports =
 	      var rw = b.width - (ib.left - b.left) - compensate;
 
 	      if (sb.width > rw) {
-	        html.input.style.width = b.width - compensate + 'px';
+	        html.input.style.width = b.width - fullCompensate + 'px';
 	      } else {
 	        html.input.style.width = rw + 'px';
 	      }
@@ -510,6 +522,7 @@ module.exports =
 	      v.events.onReset = this._onReset.bind(this);
 
 	      html.container.addEventListener('click', v.events.onClick);
+	      html.container.addEventListener('touchend', v.events.onClick);
 
 	      // Attach document event only once.
 	      if (Object.keys(_tokenfields).length === 1) {
@@ -584,7 +597,9 @@ module.exports =
 	      var canAddItem = !o.maxItems || o.maxItems && v.setItems.length < o.maxItems;
 
 	      if (this._focused && o.addItemOnBlur && canAddItem && this._newItem(html.input.value)) {
-	        this._renderItems()._refreshInput(true);
+	        this._renderItems()._refreshInput().focus();
+	      } else {
+	        this._defocusItems()._renderItems();
 	      }
 
 	      this._focused = false;
@@ -606,6 +621,11 @@ module.exports =
 	            _tokenfields[_key].hideSuggestions();
 	            _tokenfields[_key].blur();
 	          }
+	        }
+
+	        // Prevent input blur.
+	        if (e.target !== tokenfield._html.input) {
+	          e.preventDefault();
 	        }
 	      } else {
 	        for (var _key2 in _tokenfields) {
@@ -648,7 +668,7 @@ module.exports =
 
 	      if (items.length) {
 	        setTimeout(function () {
-	          _this4._renderItems()._refreshInput(true).hideSuggestions()._deselectItems().blur();
+	          _this4._renderItems()._refreshInput()._deselectItems().hideSuggestions().blur();
 	        }, 1);
 
 	        e.preventDefault();
@@ -673,7 +693,7 @@ module.exports =
 	        this._keyAction(e);
 	        return true;
 	      } else {
-	        this._defocusItems()._renderItems();
+	        this._defocusItems()._refreshItems();
 	      }
 
 	      clearTimeout(v.timer);
@@ -728,10 +748,16 @@ module.exports =
 	          this._defocusItems()._renderItems();
 	          break;
 	        case 'left':
-	          this._focusPrevItem();
+	          if (this.getFocusedItems().length || !html.input.selectionStart) {
+	            this._focusPrevItem(e.shiftKey);
+	            e.preventDefault();
+	          }
 	          break;
 	        case 'right':
-	          this._focusNextItem();
+	          if (this.getFocusedItems().length || html.input.selectionStart === val.length) {
+	            this._focusNextItem(e.shiftKey);
+	            e.preventDefault();
+	          }
 	          break;
 	        case 'delimiter':
 	          this._abortXhr();
@@ -749,25 +775,29 @@ module.exports =
 	          }
 
 	          if (item) {
-	            this._renderItems()._refreshInput(true).hideSuggestions()._deselectItems();
+	            this._renderItems().focus()._refreshInput()._refreshSuggestions()._deselectItems();
 	          }
 	          e.preventDefault();
 	          break;
 	        case 'delete':
 	          this._abortXhr();
-	          if (val.length < o.minChars || val.length === 0) {
+	          if (!html.input.selectionStart && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46) {
 	            this.hideSuggestions();
-	            var focusedItem = this.getFocusedItem();
-	            if (o.mode === 'tokenfield' && !val.length && v.setItems.length) {
-	              if (focusedItem) {
-	                this._removeItem(focusedItem[key]);
-	              } else {
+	            var focusedItems = this.getFocusedItems();
+	            if (o.mode === 'tokenfield' && v.setItems.length) {
+	              if (focusedItems.length) {
+	                focusedItems.forEach(function (item) {
+	                  _this6._removeItem(item[key]);
+	                });
+	              } else if (!html.input.selectionStart) {
 	                this._focusItem(v.setItems[v.setItems.length - 1][key]);
 	              }
-	            } else if (focusedItem) {
-	              this._removeItem(focusedItem[key]);
+	            } else if (focusedItems.length) {
+	              focusedItems.forEach(function (item) {
+	                _this6._removeItem(item[key]);
+	              });
 	            }
-	            this._renderItems()._refreshInput();
+	            this._renderItems()._refreshInput(false);
 	          } else {
 	            v.timer = setTimeout(function () {
 	              _this6._keyInput(e);
@@ -830,16 +860,26 @@ module.exports =
 
 	      if (target.classList.contains('item-remove')) {
 
-	        this._removeItem(target.key)._renderItems()._keyInput(e);
+	        this._removeItem(target.key)._defocusItems()._renderItems()._keyInput(e);
 
 	        this.focus();
 	      } else if (target.classList.contains('tokenfield-suggest-item')) {
 
 	        var item = this._getSuggestedItem(target.key);
-	        this._addItem(item)._renderItems()._refreshInput(true).hideSuggestions();
+	        this._addItem(item)._renderItems()._refreshInput()._refreshSuggestions().focus();
 	      } else {
 
-	        this._keyInput(e);
+	        var setItem = getPath(target).filter(function (node) {
+	          return node.classList && node.classList.contains('tokenfield-set-item');
+	        })[0];
+
+	        if (setItem) {
+	          this._focusItem(setItem.key, e.shiftKey, e.ctrlKey);
+	          this._refreshItems();
+	        } else {
+	          this._keyInput(e);
+	        }
+
 	        this.focus();
 	      }
 	    }
@@ -902,6 +942,8 @@ module.exports =
 	  }, {
 	    key: '_focusPrevItem',
 	    value: function _focusPrevItem() {
+	      var multiple = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 	      var key = this.key;
 	      var items = this._vars.setItems;
 	      var index = this._getFocusedItemIndex();
@@ -911,39 +953,45 @@ module.exports =
 	      }
 
 	      if (index !== null) {
-	        if (index === 0) {
+	        if (index === 0 && !multiple) {
 	          this._defocusItems();
+	        } else if (index === 0 && multiple) {
+	          this._focusItem(items[items.length - 1][key], multiple, false, true);
 	        } else {
-	          this._focusItem(items[index - 1][key]);
+	          this._focusItem(items[index - 1][key], multiple, false, true);
 	        }
 	      } else {
-	        this._focusItem(items[items.length - 1][key]);
+	        this._focusItem(items[items.length - 1][key], multiple, false, true);
 	      }
-	      this._renderItems();
+	      this._refreshItems();
 
 	      return this;
 	    }
 	  }, {
 	    key: '_focusNextItem',
 	    value: function _focusNextItem() {
+	      var multiple = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 	      var key = this.key;
 	      var items = this._vars.setItems;
-	      var index = this._getFocusedItemIndex();
+	      var index = this._getFocusedItemIndex(true);
 
 	      if (!items.length) {
 	        return this;
 	      }
 
 	      if (index !== null) {
-	        if (index === items.length - 1) {
+	        if (index === items.length - 1 && !multiple) {
 	          this._defocusItems();
+	        } else if (index === items.length - 1 && multiple) {
+	          this._focusItem(items[0][key], multiple);
 	        } else {
-	          this._focusItem(items[index + 1][key]);
+	          this._focusItem(items[index + 1][key], multiple);
 	        }
 	      } else {
-	        this._focusItem(items[0][key]);
+	        this._focusItem(items[0][key], multiple);
 	      }
-	      this._renderItems();
+	      this._refreshItems();
 
 	      return this;
 	    }
@@ -1016,11 +1064,15 @@ module.exports =
 	  }, {
 	    key: '_getFocusedItemIndex',
 	    value: function _getFocusedItemIndex() {
+	      var last = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 	      var index = null;
 	      this._vars.setItems.every(function (v, k) {
 	        if (v.focused) {
 	          index = k;
-	          return false;
+	          if (!last) {
+	            return false;
+	          }
 	        }
 	        return true;
 	      });
@@ -1090,24 +1142,78 @@ module.exports =
 	  }, {
 	    key: 'getFocusedItem',
 	    value: function getFocusedItem() {
-	      var item = null;
-	      this._vars.setItems.every(function (v) {
-	        if (v.focused) {
-	          item = v;
-	          return false;
-	        }
-	        return true;
+	      var items = this._vars.setItems.filter(function (item) {
+	        return item.focused;
+	      })[0];
+	      if (items.length) return items[0];
+	      return null;
+	    }
+	  }, {
+	    key: 'getFocusedItems',
+	    value: function getFocusedItems() {
+	      return this._vars.setItems.filter(function (item) {
+	        return item.focused;
 	      });
-	      return item;
 	    }
 	  }, {
 	    key: '_focusItem',
 	    value: function _focusItem(key) {
+	      var shift = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	      var _this11 = this;
 
-	      this._vars.setItems.forEach(function (v) {
-	        v.focused = v[_this11.key] === key;
-	      });
+	      var ctrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	      var add = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+
+	      if (shift) {
+	        var _ret = function () {
+	          var first = null;
+	          var last = null;
+	          var target = null;
+	          _this11._vars.setItems.forEach(function (item, k) {
+	            if (item[_this11.key] === key) {
+	              target = k;
+	            }
+	            if (first === null && item.focused) {
+	              first = k;
+	            }
+	            if (item.focused) {
+	              last = k;
+	            }
+	          });
+
+	          if (target === 0 && first === null && last === null) {
+	            return {
+	              v: void 0
+	            };
+	          } else if (first === 0 && target === _this11._vars.setItems.length - 1 && add) {
+	            return {
+	              v: void 0
+	            };
+	          } else if (first === null && last === null) {
+	            _this11._vars.setItems[target].focused = true;
+	          } else if (target === 0 && last === _this11._vars.setItems.length - 1 && !add) {
+	            _this11._vars.setItems[first].focused = false;
+	          } else {
+	            first = Math.min(target, first);
+	            last = Math.max(target, last);
+	            _this11._vars.setItems.forEach(function (item, k) {
+	              item.focused = target === k || k >= first && k <= last;
+	            });
+	          }
+	        }();
+
+	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	      } else {
+	        this._vars.setItems.forEach(function (item) {
+	          if (ctrl) {
+	            item.focused = item[_this11.key] === key ? !item.focused : item.focused;
+	          } else {
+	            item.focused = item[_this11.key] === key;
+	          }
+	        });
+	      }
 	      return this;
 	    }
 	  }, {
@@ -1165,24 +1271,35 @@ module.exports =
 	      var html = this._html;
 
 	      html.items.innerHTML = '';
-	      if (v.setItems.length) {
-	        v.setItems.forEach(function (item) {
-	          var itemEl = _this12._renderItem(item);
-	          html.items.appendChild(itemEl);
-	          item.el = itemEl;
-	          if (item.focused) {
-	            item.el.classList.add('focused');
-	          } else {
-	            item.el.classList.remove('focused');
-	          }
-	        });
-	      }
+	      v.setItems.forEach(function (item) {
+	        var itemEl = _this12._renderItem(item);
+	        html.items.appendChild(itemEl);
+	        item.el = itemEl;
+	        if (item.focused) {
+	          item.el.classList.add('focused');
+	        } else {
+	          item.el.classList.remove('focused');
+	        }
+	      });
 
 	      if (v.setItems.length > 1 && o.mode === 'tokenfield') {
 	        html.input.setAttribute('placeholder', '');
 	      }
 
 	      return this;
+	    }
+	  }, {
+	    key: '_refreshItems',
+	    value: function _refreshItems() {
+	      var v = this._vars;
+
+	      v.setItems.forEach(function (item) {
+	        if (item.focused) {
+	          item.el.classList.add('focused');
+	        } else {
+	          item.el.classList.remove('focused');
+	        }
+	      });
 	    }
 	  }, {
 	    key: '_renderItem',
@@ -1194,6 +1311,7 @@ module.exports =
 	      var input = itemHtml.querySelector('.item-input');
 	      var remove = itemHtml.querySelector('.item-remove');
 
+	      itemHtml.key = item[this.key];
 	      remove.key = item[this.key];
 	      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + '[]');
 
@@ -1285,6 +1403,26 @@ module.exports =
 	      return this;
 	    }
 	  }, {
+	    key: '_refreshSuggestions',
+	    value: function _refreshSuggestions() {
+	      var v = this._vars;
+	      var o = this._options;
+
+	      if (v.suggestedItems.length) {
+	        if (!o.maxItems || o.maxItems && v.setItems.length < o.maxItems) {
+	          var data = this._prepareData(this.remapData(o.items));
+	          var items = this._filterData(this._html.input.value, data);
+	          this._vars.suggestedItems = this._filterSetItems(items);
+	          this.renderSuggestions(this._vars.suggestedItems);
+	        } else {
+	          this.hideSuggestions();
+	        }
+	      } else {
+	        this.hideSuggestions();
+	      }
+	      return this;
+	    }
+	  }, {
 	    key: 'hideSuggestions',
 	    value: function hideSuggestions() {
 	      this.emit('hideSuggestions', this);
@@ -1307,8 +1445,7 @@ module.exports =
 	      var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	      this._vars.setItems = items;
-	      this._refreshInput(true);
-	      this.hideSuggestions()._renderItems();
+	      this._refreshInput()._renderItems().hideSuggestions().focus();
 	      this.emit('change', this);
 	      return this;
 	    }
@@ -1316,8 +1453,7 @@ module.exports =
 	    key: 'emptyItems',
 	    value: function emptyItems() {
 	      this._vars.setItems = [];
-	      this._refreshInput(true);
-	      this.hideSuggestions()._renderItems();
+	      this._refreshInput()._renderItems().hideSuggestions().focus();
 	      this.emit('change', this);
 	      return this;
 	    }
