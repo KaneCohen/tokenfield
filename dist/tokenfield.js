@@ -781,9 +781,9 @@ module.exports =
 	          break;
 	        case 'delete':
 	          this._abortXhr();
-	          if (!html.input.selectionStart && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46) {
+	          var focusedItems = this.getFocusedItems();
+	          if (!html.input.selectionStart && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46 || focusedItems.length) {
 	            this.hideSuggestions();
-	            var focusedItems = this.getFocusedItems();
 	            if (o.mode === 'tokenfield' && v.setItems.length) {
 	              if (focusedItems.length) {
 	                focusedItems.forEach(function (item) {
@@ -817,7 +817,7 @@ module.exports =
 	      var o = this._options;
 	      var html = this._html;
 
-	      this._defocusItems();
+	      this._defocusItems()._refreshItems();
 
 	      var val = this.onInput(html.input.value.trim(), e);
 
