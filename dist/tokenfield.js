@@ -76,7 +76,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.2 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.3 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -191,6 +191,7 @@ module.exports =
 	    keys: { // Various action keys.
 	      17: 'ctrl',
 	      16: 'shift',
+	      91: 'meta',
 	      8: 'delete', // Backspace
 	      27: 'esc',
 	      37: 'left',
@@ -198,6 +199,7 @@ module.exports =
 	      39: 'right',
 	      40: 'down',
 	      46: 'delete',
+	      65: 'select',
 	      9: 'delimiter', // Tab
 	      13: 'delimiter', // Enter
 	      108: 'delimiter' // Numpad Enter
@@ -779,11 +781,19 @@ module.exports =
 	          }
 	          e.preventDefault();
 	          break;
+	        case 'select':
+	          if (!val.length && (e.ctrlKey || e.metaKey)) {
+	            this._vars.setItems.forEach(function (item) {
+	              item.focused = true;
+	            });
+	            this._refreshItems();
+	          }
+	          break;
 	        case 'delete':
 	          {
 	            this._abortXhr();
 	            var focusedItems = this.getFocusedItems();
-	            if (!html.input.selectionStart && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46 || focusedItems.length) {
+	            if (!html.input.selectionEnd && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46 || focusedItems.length) {
 	              this.hideSuggestions();
 	              if (o.mode === 'tokenfield' && v.setItems.length) {
 	                if (focusedItems.length) {
@@ -876,7 +886,7 @@ module.exports =
 	        })[0];
 
 	        if (setItem) {
-	          this._focusItem(setItem.key, e.shiftKey, e.ctrlKey);
+	          this._focusItem(setItem.key, e.shiftKey, e.ctrlKey || e.metaKey);
 	          this._refreshItems();
 	        } else {
 	          this._keyInput(e);
