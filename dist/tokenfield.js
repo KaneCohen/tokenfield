@@ -90,7 +90,7 @@ module.exports =
 	var _factory = document.createElement('div');
 
 	var _templates = {
-	  containerTokenfield: '<div class="tokenfield tokenfield-mode-tokens">\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n    </div>',
+	  containerTokenfield: '<div class="tokenfield tokenfield-mode-tokens">\n      <input class="tokenfield-copy-helper"\n        style="position:fixed;left:-1000000px"\n        tabindex="-1"\n        type="text"\n      />\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n    </div>',
 	  containerList: '<div class="tokenfield tokenfield-mode-list">\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n    </div>',
 	  suggestItem: '<li class="tokenfield-suggest-item"></li>',
 	  setItem: '<li class="tokenfield-set-item">\n      <span class="item-label"></span>\n      <span class="item-remove">\xD7</span>\n      <input class="item-input" type="hidden" />\n    </li>'
@@ -199,12 +199,15 @@ module.exports =
 	      39: 'right',
 	      40: 'down',
 	      46: 'delete',
-	      65: 'select',
+	      65: 'select', // A
+	      67: 'copy', // C
 	      9: 'delimiter', // Tab
 	      13: 'delimiter', // Enter
 	      108: 'delimiter' // Numpad Enter
 	    },
 	    delimiters: [], // Array of strings which act as delimiters during tokenization.
+	    copyProperty: 'name', // Property of the token used for copy event.
+	    copyDelimiter: ', ', // Delimiter used to populate clipboard with selected tokens.
 	    remote: {
 	      type: 'GET', // Ajax request type.
 	      url: null, // Full server url.
@@ -332,6 +335,7 @@ module.exports =
 	      html.input = html.container.querySelector('.tokenfield-input');
 	      html.input.setAttribute('type', o.inputType);
 	      html.input.placeholder = o.placeholder;
+	      html.copyHelper = html.container.querySelector('.tokenfield-copy-helper');
 
 	      o.el.style.display = 'none';
 	      html.suggest.style.display = 'none';
@@ -596,6 +600,10 @@ module.exports =
 	        html.input.removeEventListener('paste', v.events.onPaste);
 	      }
 
+	      if (e.relatedTarget && e.relatedTarget === html.copyHelper) {
+	        return;
+	      }
+
 	      var canAddItem = !o.maxItems || o.maxItems && v.setItems.length < o.maxItems;
 
 	      if (this._focused && o.addItemOnBlur && canAddItem && this._newItem(html.input.value)) {
@@ -789,22 +797,41 @@ module.exports =
 	            this._refreshItems();
 	          }
 	          break;
+	        case 'copy':
+	          {
+	            var focusedItems = this.getFocusedItems();
+	            if (focusedItems.length && (e.ctrlKey || e.metaKey)) {
+	              var copyString = this._vars.setItems.filter(function (item) {
+	                return item.focused;
+	              }).map(function (item) {
+	                return item[o.copyProperty];
+	              }).join(o.copyDelimiter);
+
+	              html.copyHelper.value = copyString;
+	              html.copyHelper.focus();
+	              html.copyHelper.select();
+	              document.execCommand('copy');
+	              html.copyHelper.value = '';
+	              html.input.focus();
+	            }
+	            break;
+	          }
 	        case 'delete':
 	          {
 	            this._abortXhr();
-	            var focusedItems = this.getFocusedItems();
-	            if (!html.input.selectionEnd && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46 || focusedItems.length) {
+	            var _focusedItems = this.getFocusedItems();
+	            if (!html.input.selectionEnd && e.keyCode === 8 || html.input.selectionStart === val.length && e.keyCode === 46 || _focusedItems.length) {
 	              this.hideSuggestions();
 	              if (o.mode === 'tokenfield' && v.setItems.length) {
-	                if (focusedItems.length) {
-	                  focusedItems.forEach(function (item) {
+	                if (_focusedItems.length) {
+	                  _focusedItems.forEach(function (item) {
 	                    _this6._removeItem(item[key]);
 	                  });
 	                } else if (!html.input.selectionStart) {
 	                  this._focusItem(v.setItems[v.setItems.length - 1][key]);
 	                }
-	              } else if (focusedItems.length) {
-	                focusedItems.forEach(function (item) {
+	              } else if (_focusedItems.length) {
+	                _focusedItems.forEach(function (item) {
 	                  _this6._removeItem(item[key]);
 	                });
 	              }
@@ -1109,6 +1136,15 @@ module.exports =
 	      return items.length ? items[0] : null;
 	    }
 	  }, {
+	    key: '_getAvailableItem',
+	    value: function _getAvailableItem(val) {
+	      var prop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	      if (prop === null) prop = this.key;
+	      var items = this._filterItems(this._options.items, val, prop);
+	      return items.length ? items[0] : null;
+	    }
+	  }, {
 	    key: '_filterItems',
 	    value: function _filterItems(items, val, prop) {
 	      return items.filter(function (v) {
@@ -1238,7 +1274,7 @@ module.exports =
 	      if (typeof value === 'string' && !value.length) return null;
 
 	      var o = this._options;
-	      var item = this._getItem(value, o.itemData) || this._getSuggestedItem(value, o.itemData);
+	      var item = this._getItem(value, o.itemData) || this._getSuggestedItem(value, o.itemData) || this._getAvailableItem(value, o.itemData);
 
 	      if (!item && o.newItems) {
 	        var _item;
@@ -1302,10 +1338,12 @@ module.exports =
 	      var v = this._vars;
 
 	      v.setItems.forEach(function (item) {
-	        if (item.focused) {
-	          item.el.classList.add('focused');
-	        } else {
-	          item.el.classList.remove('focused');
+	        if (item.el) {
+	          if (item.focused) {
+	            item.el.classList.add('focused');
+	          } else {
+	            item.el.classList.remove('focused');
+	          }
 	        }
 	      });
 	    }
@@ -1416,18 +1454,25 @@ module.exports =
 	      var v = this._vars;
 	      var o = this._options;
 
+	      if (this._html.input.value.length < o.minChars) {
+	        this.hideSuggestions();
+	        return this;
+	      }
+
+	      var data = this._prepareData(this.remapData(o.items));
+	      var items = this._filterData(this._html.input.value, data);
+	      v.suggestedItems = this._filterSetItems(items);
+
 	      if (v.suggestedItems.length) {
 	        if (!o.maxItems || o.maxItems && v.setItems.length < o.maxItems) {
-	          var data = this._prepareData(this.remapData(o.items));
-	          var items = this._filterData(this._html.input.value, data);
-	          this._vars.suggestedItems = this._filterSetItems(items);
-	          this.renderSuggestions(this._vars.suggestedItems);
+	          this.renderSuggestions(v.suggestedItems);
 	        } else {
 	          this.hideSuggestions();
 	        }
 	      } else {
 	        this.hideSuggestions();
 	      }
+
 	      return this;
 	    }
 	  }, {
