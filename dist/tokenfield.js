@@ -1497,8 +1497,8 @@ module.exports =
 	    value: function setItems() {
 	      var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-	      this._vars.setItems = items;
-	      this._refreshInput()._renderItems().hideSuggestions().focus();
+	      this._vars.setItems = this._prepareData(items || []);
+	      this._renderItems()._refreshInput().hideSuggestions();
 	      this.emit('change', this);
 	      return this;
 	    }
@@ -1506,7 +1506,7 @@ module.exports =
 	    key: 'emptyItems',
 	    value: function emptyItems() {
 	      this._vars.setItems = [];
-	      this._refreshInput()._renderItems().hideSuggestions().focus();
+	      this._renderItems()._refreshInput().hideSuggestions();
 	      this.emit('change', this);
 	      return this;
 	    }
