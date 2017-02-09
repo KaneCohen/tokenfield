@@ -76,7 +76,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.6 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.7 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -758,7 +758,7 @@ module.exports =
 	          this._defocusItems()._renderItems();
 	          break;
 	        case 'left':
-	          if (this.getFocusedItems().length || !html.input.selectionStart) {
+	          if (this.getFocusedItems().length || !html.input.selectionStart && !html.input.selectionEnd) {
 	            this._focusPrevItem(e.shiftKey);
 	            e.preventDefault();
 	          }
@@ -995,12 +995,13 @@ module.exports =
 	        if (index === 0 && !multiple) {
 	          this._defocusItems();
 	        } else if (index === 0 && multiple) {
-	          this._focusItem(items[items.length - 1][key], multiple, false, true);
+	          var lastFocused = this._getFocusedItemIndex(true);
+	          this._defocusItem(items[lastFocused][key]);
 	        } else {
 	          this._focusItem(items[index - 1][key], multiple, false, true);
 	        }
 	      } else {
-	        this._focusItem(items[items.length - 1][key], multiple, false, true);
+	        this._focusItem(items[items.length - 1][key], false, false, true);
 	      }
 	      this._refreshItems();
 
@@ -1028,7 +1029,7 @@ module.exports =
 	          this._focusItem(items[index + 1][key], multiple);
 	        }
 	      } else {
-	        this._focusItem(items[0][key], multiple);
+	        this._focusItem(items[0][key], false);
 	      }
 	      this._refreshItems();
 
@@ -1213,12 +1214,12 @@ module.exports =
 	      var ctrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 	      var add = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-
 	      if (shift) {
 	        var _ret = function () {
 	          var first = null;
 	          var last = null;
 	          var target = null;
+	          var length = _this11._vars.setItems.length;
 	          _this11._vars.setItems.forEach(function (item, k) {
 	            if (item[_this11.key] === key) {
 	              target = k;
@@ -1231,13 +1232,13 @@ module.exports =
 	            }
 	          });
 
-	          if (target === 0 && first === null && last === null) {
+	          if ((target === 0 || target === length - 1) && first === null && last === null) {
 	            return {
 	              v: void 0
 	            };
 	          } else if (first === null && last === null) {
 	            _this11._vars.setItems[target].focused = true;
-	          } else if (target === 0 && last === _this11._vars.setItems.length - 1 && !add) {
+	          } else if (target === 0 && last === length - 1 && !add) {
 	            _this11._vars.setItems[first].focused = false;
 	          } else {
 	            first = Math.min(target, first);
@@ -1259,6 +1260,17 @@ module.exports =
 	        });
 	      }
 	      return this;
+	    }
+	  }, {
+	    key: '_defocusItem',
+	    value: function _defocusItem(key) {
+	      var _this12 = this;
+
+	      return this._vars.setItems.filter(function (item) {
+	        if (item[_this12.key] === key) {
+	          item.focused = false;
+	        }
+	      });
 	    }
 	  }, {
 	    key: '_defocusItems',
@@ -1308,7 +1320,7 @@ module.exports =
 	  }, {
 	    key: '_renderItems',
 	    value: function _renderItems() {
-	      var _this12 = this;
+	      var _this13 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1316,7 +1328,7 @@ module.exports =
 
 	      html.items.innerHTML = '';
 	      v.setItems.forEach(function (item) {
-	        var itemEl = _this12._renderItem(item);
+	        var itemEl = _this13._renderItem(item);
 	        html.items.appendChild(itemEl);
 	        item.el = itemEl;
 	        if (item.focused) {
@@ -1387,7 +1399,7 @@ module.exports =
 	  }, {
 	    key: 'renderSuggestions',
 	    value: function renderSuggestions(items) {
-	      var _this13 = this;
+	      var _this14 = this;
 
 	      var v = this._vars;
 	      var o = this._options;
@@ -1411,7 +1423,7 @@ module.exports =
 	      items.every(function (item, k) {
 	        if (k >= o.maxSuggest) return false;
 
-	        var el = _this13.renderSuggestedItem(item);
+	        var el = _this14.renderSuggestedItem(item);
 	        item.el = el;
 	        html.suggestList.appendChild(el);
 	        return true;
