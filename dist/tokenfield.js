@@ -68,6 +68,8 @@ module.exports =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -76,7 +78,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.9 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.10 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -548,8 +550,8 @@ module.exports =
 	    value: function _onMouseOver(e) {
 	      var target = e.target;
 	      if (target.classList.contains('tokenfield-suggest-item')) {
-	        var selected = this._html.suggestList.querySelectorAll('.selected');
-	        Array.prototype.forEach.call(selected, function (item) {
+	        var selected = [].concat(_toConsumableArray(this._html.suggestList.querySelectorAll('.selected')));
+	        selected.forEach(function (item) {
 	          if (item !== target) item.classList.remove('selected');
 	        });
 	        target.classList.add('selected');
@@ -1510,7 +1512,36 @@ module.exports =
 	    value: function setItems() {
 	      var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
+	      if (!Array.isArray(items)) {
+	        items = [items];
+	      }
 	      this._vars.setItems = this._prepareData(items || []);
+	      this._renderItems()._refreshInput().hideSuggestions();
+	      this.emit('change', this);
+	      return this;
+	    }
+	  }, {
+	    key: 'addItems',
+	    value: function addItems() {
+	      var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	      var key = this._options.itemValue;
+	      if (!Array.isArray(items)) {
+	        items = [items];
+	      }
+	      var idsHash = {};
+	      this.getItems().forEach(function (item) {
+	        idsHash[item[key]] = true;
+	      });
+	      items = items.filter(function (item) {
+	        return idsHash[item[key]] !== true;
+	      });
+	      if (!items.length) {
+	        return this;
+	      }
+
+	      var preparedItems = this._prepareData(items);
+	      this._vars.setItems = this._vars.setItems.concat(preparedItems);
 	      this._renderItems()._refreshInput().hideSuggestions();
 	      this.emit('change', this);
 	      return this;
