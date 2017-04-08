@@ -679,7 +679,7 @@ module.exports =
 
 	      if (items.length) {
 	        setTimeout(function () {
-	          _this4._renderItems()._refreshInput()._deselectItems().hideSuggestions().blur();
+	          _this4._renderItems()._refreshInput()._deselectItems().hideSuggestions();
 	        }, 1);
 
 	        e.preventDefault();
