@@ -78,7 +78,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.10 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.12 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -133,6 +133,10 @@ module.exports =
 	  }
 	  var result = value + '';
 	  return result === '0' && 1 / value === -Infinity ? '-0' : result;
+	}
+
+	function keyToChar(e) {
+	  return e.key || String.fromCharCode(parseInt(e.keyIdentifier.substr(2), 16));
 	}
 
 	function escapeRegex(string) {
@@ -528,6 +532,8 @@ module.exports =
 	      v.events.onFocus = this._onFocus.bind(this);
 	      v.events.onResize = this._onResize.bind(this);
 	      v.events.onReset = this._onReset.bind(this);
+	      v.events.onKeyDown = this._onKeyDown.bind(this);
+	      v.events.onFocusOut = this._onFocusOut.bind(this);
 
 	      html.container.addEventListener('click', v.events.onClick);
 
@@ -570,8 +576,6 @@ module.exports =
 	      var v = this._vars;
 	      var html = this._html;
 	      var o = this._options;
-	      v.events.onKeyDown = this._onKeyDown.bind(this);
-	      v.events.onFocusOut = this._onFocusOut.bind(this);
 
 	      html.input.removeEventListener('keydown', v.events.onKeyDown);
 	      html.input.addEventListener('keydown', v.events.onKeyDown);
@@ -704,7 +708,8 @@ module.exports =
 	        }, 1);
 	      }
 
-	      if (typeof o.keys[e.keyCode] !== 'undefined' || o.delimiters.includes(e.key)) {
+	      var key = keyToChar(e);
+	      if (typeof o.keys[e.keyCode] !== 'undefined' || o.delimiters.includes(key)) {
 	        this._keyAction(e);
 	        return true;
 	      } else {
@@ -732,8 +737,9 @@ module.exports =
 	      var html = this._html;
 	      var keyName = o.keys[e.keyCode];
 	      var val = html.input.value.trim();
+	      var keyChar = keyToChar(e);
 
-	      if (o.delimiters.includes(e.key) && typeof keyName === 'undefined') {
+	      if (o.delimiters.includes(keyChar) && typeof keyName === 'undefined') {
 	        keyName = 'delimiter';
 	      }
 
