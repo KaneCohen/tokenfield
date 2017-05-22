@@ -78,7 +78,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.6.12 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.7.1 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -227,6 +227,7 @@ module.exports =
 	    // Accepts text, email, url, and others.
 	    minChars: 2, // Number of characters before we start to look for similar items.
 	    maxSuggest: 10, // Max items in the suggest box.
+	    filterSetItems: true, // Filters already set items from the suggestions list.
 	    itemLabel: 'name', // Property to use in order to render item label.
 	    itemName: 'items', // If set, for each tag/token there will be added
 	    // input field with array property name:
@@ -459,7 +460,7 @@ module.exports =
 	            v.cache[val] = response;
 	            var data = _this2._prepareData(_this2.remapData(response));
 	            var items = _this2._filterData(val, data);
-	            v.suggestedItems = _this2._filterSetItems(items);
+	            v.suggestedItems = o.filterSetItems ? _this2._filterSetItems(items) : items;
 	            _this2.showSuggestions();
 	          } else if (v.xhr.status > 0) {
 	            throw new Error('Error while loading remote data.');
@@ -888,14 +889,14 @@ module.exports =
 	        } else if (!o.remote.url && o.items.length) {
 	          var data = this._prepareData(this.remapData(o.items));
 	          var items = this._filterData(val, data);
-	          v.suggestedItems = this._filterSetItems(items);
+	          v.suggestedItems = o.filterSetItems ? this._filterSetItems(items) : items;
 	          this.showSuggestions();
 	        }
 	      } else {
 	        // Work with cached data.
 	        var _data = this._prepareData(this.remapData(v.cache[val]));
 	        var _items = this._filterData(val, _data);
-	        v.suggestedItems = this._filterSetItems(_items);
+	        v.suggestedItems = o.filterSetItems ? this._filterSetItems(_items) : _items;
 	        this.showSuggestions();
 	      }
 
@@ -1185,7 +1186,9 @@ module.exports =
 	    key: '_addItem',
 	    value: function _addItem(item) {
 	      item.focused = false;
-	      if (!this._getItem(item[this.key])) {
+	      var o = this._options;
+	      // Check if item already exists in a given list.
+	      if (item.isNew && !this._getItem(item[o.itemData], o.itemData) || !this._getItem(item[o.itemValue], o.itemValue)) {
 	        this.emit('addToken', this, item);
 	        if (!this._options.maxItems || this._options.maxItems && this._vars.setItems.length < this._options.maxItems) {
 	          item.selected = false;
@@ -1451,6 +1454,13 @@ module.exports =
 	      if (item.selected) {
 	        el.classList.add('selected');
 	      }
+	      if (!o.filterSetItems) {
+	        var setItem = this._getItem(item[o.itemValue], o.itemValue) || this._getItem(item[o.itemData], o.itemData);
+
+	        if (setItem) {
+	          el.classList.add('set');
+	        }
+	      }
 	      return el;
 	    }
 	  }, {
@@ -1482,7 +1492,7 @@ module.exports =
 
 	      var data = this._prepareData(this.remapData(o.items));
 	      var items = this._filterData(this._html.input.value, data);
-	      v.suggestedItems = this._filterSetItems(items);
+	      v.suggestedItems = o.filterSetItems ? this._filterSetItems(items) : items;
 
 	      if (v.suggestedItems.length) {
 	        if (!o.maxItems || o.maxItems && v.setItems.length < o.maxItems) {
