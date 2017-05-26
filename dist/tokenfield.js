@@ -78,7 +78,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.7.2 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.7.3 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -870,6 +870,8 @@ module.exports =
 
 	      var val = this.onInput(html.input.value.trim(), e);
 
+	      this.emit('input', this, val);
+
 	      if (val.length < o.minChars) {
 	        this.hideSuggestions();
 	        return false;
@@ -1587,6 +1589,13 @@ module.exports =
 	      this._renderItems()._refreshInput().hideSuggestions();
 	      this.emit('change', this);
 	      return this;
+	    }
+	  }, {
+	    key: 'getSuggestedItems',
+	    value: function getSuggestedItems() {
+	      return this._vars.suggestedItems.map(function (item) {
+	        return Object.assign({}, item);
+	      });
 	    }
 	  }, {
 	    key: 'focus',
