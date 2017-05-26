@@ -1160,9 +1160,9 @@ module.exports =
 	    value: function _filterItems(items, val, prop) {
 	      return items.filter(function (v) {
 	        if (typeof v[prop] === 'string' && typeof val === 'string') {
-	          return v[prop].toLowerCase() === val.toLowerCase();
+	          return v[prop].toLowerCase() == val.toLowerCase();
 	        }
-	        return v[prop] === val;
+	        return v[prop] == val;
 	      });
 	    }
 	  }, {
@@ -1560,6 +1560,24 @@ module.exports =
 	      this._vars.setItems = this._vars.setItems.concat(preparedItems);
 	      this._renderItems()._refreshInput().hideSuggestions();
 	      this.emit('change', this);
+	      return this;
+	    }
+	  }, {
+	    key: 'removeItem',
+	    value: function removeItem(value) {
+	      var o = this._options;
+	      if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && (value[o.itemValue] || value[o.newItemValue])) {
+	        value = value[o.itemValue] || value[o.newItemValue];
+	      }
+
+	      var item = this._getItem(value, o.itemValue) || this._getItem(value, o.newItemValue);
+
+	      if (!item) {
+	        return this;
+	      }
+
+	      this._removeItem(item[this.key])._renderItems();
+
 	      return this;
 	    }
 	  }, {
