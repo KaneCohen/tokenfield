@@ -78,7 +78,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.7.5 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.7.6 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -95,7 +95,7 @@ module.exports =
 	  containerTokenfield: '<div class="tokenfield tokenfield-mode-tokens">\n      <input class="tokenfield-copy-helper"\n        style="position:fixed;left:-1000000px"\n        tabindex="-1"\n        type="text"\n      />\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n    </div>',
 	  containerList: '<div class="tokenfield tokenfield-mode-list">\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n    </div>',
 	  suggestItem: '<li class="tokenfield-suggest-item"></li>',
-	  setItem: '<li class="tokenfield-set-item">\n      <span class="item-label"></span>\n      <span class="item-remove">\xD7</span>\n      <input class="item-input" type="hidden" />\n    </li>'
+	  setItem: '<li class="tokenfield-set-item">\n      <span class="item-label"></span>\n      <a href="#" class="item-remove" tabindex="-1">\xD7</a>\n      <input class="item-input" type="hidden" />\n    </li>'
 	};
 
 	function guid() {
@@ -912,16 +912,15 @@ module.exports =
 	      var target = e.target;
 
 	      if (target.classList.contains('item-remove')) {
+	        e.preventDefault();
 
 	        this._removeItem(target.key)._defocusItems()._renderItems()._keyInput(e);
 
 	        this.focus();
 	      } else if (target.classList.contains('tokenfield-suggest-item')) {
-
 	        var item = this._getSuggestedItem(target.key);
 	        this._addItem(item)._renderItems()._refreshInput()._refreshSuggestions().focus();
 	      } else {
-
 	        var setItem = getPath(target).filter(function (node) {
 	          return node.classList && node.classList.contains('tokenfield-set-item');
 	        })[0];

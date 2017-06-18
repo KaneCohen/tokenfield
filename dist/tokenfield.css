@@ -58,7 +58,7 @@
       border-radius: 4px;
       line-height: 1.5;
       cursor: pointer;
-      color: rgba(0, 0, 0, 0.4);
+      color: rgba(0, 0, 0, 0.6);
       background: rgba(0, 0, 0, 0.08); }
       .tokenfield .tokenfield-set > ul > li:hover {
         color: black;
@@ -67,7 +67,8 @@
         display: inline-block;
         font-weight: bold;
         font-size: 0.9285em;
-        cursor: pointer; }
+        cursor: pointer;
+        color: rgba(0, 0, 0, 0.4); }
   .tokenfield .tokenfield-input {
     margin-bottom: 5px;
     border: none;
