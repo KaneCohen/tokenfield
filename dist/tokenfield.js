@@ -82,7 +82,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.8.0 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.8.1 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -872,7 +872,7 @@ module.exports =
 	            _this7._fetchData(val);
 	          }, o.delay);
 	        } else if (!o.remote.url && o.items.length) {
-	          var data = this._prepareData(this.remapData(o.items));
+	          var data = this._prepareData(o.items);
 	          var items = this._filterData(val, data);
 	          v.suggestedItems = o.filterSetItems ? this._filterSetItems(items) : items;
 	          this.showSuggestions();
@@ -1474,7 +1474,7 @@ module.exports =
 	        return this;
 	      }
 
-	      var data = this._prepareData(this.remapData(o.items));
+	      var data = this._prepareData(o.items);
 	      var items = this._filterData(this._html.input.value, data);
 	      v.suggestedItems = o.filterSetItems ? this._filterSetItems(items) : items;
 
@@ -1639,7 +1639,7 @@ module.exports =
 	exports.default = ajax;
 	/**
 	 * Simple AJAX handling module.
-	 * tokenfield 0.8.0 <https://github.com/KaneCohen/tokenfield>
+	 * tokenfield 0.8.1 <https://github.com/KaneCohen/tokenfield>
 	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	 * Available under BSD-3-Clause license
 	 */
@@ -1655,6 +1655,7 @@ module.exports =
 	  }
 
 	  var paramsString = paramsArr.join('&');
+
 	  if (options.type.toLowerCase() === 'get') {
 	    url += '?' + paramsString;
 	  }
@@ -1672,7 +1673,9 @@ module.exports =
 	  if (callback) {
 	    xhr.onreadystatechange = callback;
 	  }
+
 	  xhr.send(params);
+
 	  return xhr;
 	}
 
