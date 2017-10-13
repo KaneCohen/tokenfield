@@ -97,6 +97,7 @@ new Tokenfield({
 | delay | integer | 300 | Sets delay in milliseconds after which remote request is performed. |
 | timestampParam | string | `'t'` | Sets parameter for the timestamp when remote call was requested. |
 | params | object | `{}` | Sets any additional AJAX params |
+| headers | object | `{}` | Sets AJAX headers. Could be simple key:value items, or key:function items if you want to add headers dynamically |
 
 ## Events
 

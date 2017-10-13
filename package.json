@@ -1,6 +1,6 @@
 {
   "name": "tokenfield",
-  "version": "0.7.6",
+  "version": "0.8.0",
   "description": "Input field with tagging/token/chip capabilities written in raw JavaScript",
   "keywords": ["tagging", "tokens", "tokenizer", "chips", "autocomplete"],
   "author": {
@@ -19,15 +19,23 @@
     "babel-loader": "6.2.5",
     "babel-register": "6.18.0",
     "babel-preset-es2015": "6.18.0",
+    "babel-preset-env": "1.6.0",
     "eslint": "1.10.3",
     "eslint-loader": "1.2.0",
     "webpack": "1.13.3",
-    "node-sass": "3.10.1"
+    "node-sass": "3.10.1",
+    "chai": "4.1.2",
+    "mocha": "4.0.1",
+    "xmlhttprequest": "1.8.0"
+  },
+  "babel": {
+    "presets": ["env"]
   },
   "scripts": {
     "lint": "eslint lib",
     "build": "node build.js",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "test": "mocha --require babel-register test/*.spec.js --reporter progress"
   },
   "main": "dist/tokenfield.js"
 }

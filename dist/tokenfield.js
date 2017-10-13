@@ -66,6 +66,10 @@ module.exports =
 
 	var _events2 = _interopRequireDefault(_events);
 
+	var _ajax = __webpack_require__(3);
+
+	var _ajax2 = _interopRequireDefault(_ajax);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -78,7 +82,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Input field with tagging/token/chip capabilities written in raw JavaScript
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.7.6 <https://github.com/KaneCohen/tokenfield>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.8.0 <https://github.com/KaneCohen/tokenfield>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Available under BSD-3-Clause license
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
@@ -144,30 +148,6 @@ module.exports =
 	  return string && reHasRegExpChar.test(string) ? string.replace(reRegExpChar, '\\$&') : string;
 	}
 
-	function ajax(params) {
-	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-
-	  var xhr = new XMLHttpRequest();
-	  var url = options.url;
-	  var paramsArr = [];
-	  for (var key in params) {
-	    paramsArr.push(key + '=' + params[key]);
-	  }
-
-	  var paramsString = paramsArr.join('&');
-	  if (options.type.toLowerCase() === 'get') {
-	    url += '?' + paramsString;
-	  }
-
-	  xhr.open(options.type, url, true);
-	  if (callback) {
-	    xhr.onreadystatechange = callback;
-	  }
-	  xhr.send(params);
-	  return xhr;
-	}
-
 	function makeDefaultsAndOptions() {
 	  var _defaults = {
 	    focusedItem: null,
@@ -220,7 +200,8 @@ module.exports =
 	      queryParam: 'q', // What param to use when asking server for data.
 	      delay: 300, // Dealy between last keydown event and ajax request for data.
 	      timestampParam: 't',
-	      params: {}
+	      params: {},
+	      headers: {}
 	    },
 	    placeholder: null, // Hardcoded placeholder text. If not set, will use placeholder from the element itself.
 	    inputType: 'text', // HTML attribute for the input element which lets mobile browsers use various input modes.
@@ -453,7 +434,7 @@ module.exports =
 	      reqData[r.queryParam] = val;
 	      reqData[r.timestampParam] = Math.round(new Date().getTime() / 1000);
 
-	      v.xhr = ajax(reqData, o.remote, function () {
+	      v.xhr = (0, _ajax2.default)(reqData, o.remote, function () {
 	        if (v.xhr.readyState == 4) {
 	          if (v.xhr.status == 200) {
 	            var response = JSON.parse(v.xhr.responseText);
@@ -1645,6 +1626,55 @@ module.exports =
 /***/ function(module, exports) {
 
 	module.exports = require("events");
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = ajax;
+	/**
+	 * Simple AJAX handling module.
+	 * tokenfield 0.8.0 <https://github.com/KaneCohen/tokenfield>
+	 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
+	 * Available under BSD-3-Clause license
+	 */
+	function ajax(params) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+	  var xhr = new XMLHttpRequest();
+	  var url = options.url;
+	  var paramsArr = [];
+	  for (var key in params) {
+	    paramsArr.push(key + '=' + params[key]);
+	  }
+
+	  var paramsString = paramsArr.join('&');
+	  if (options.type.toLowerCase() === 'get') {
+	    url += '?' + paramsString;
+	  }
+
+	  xhr.open(options.type, url, true);
+
+	  for (var header in options.headers) {
+	    var value = options.headers[header];
+	    if (typeof value === 'function') {
+	      value = value(params, options);
+	    }
+	    xhr.setRequestHeader(header, value);
+	  }
+
+	  if (callback) {
+	    xhr.onreadystatechange = callback;
+	  }
+	  xhr.send(params);
+	  return xhr;
+	}
 
 /***/ }
 /******/ ]);
