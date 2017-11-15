@@ -68,7 +68,7 @@ would send an additional array which would contain an array of strings.
 | placeholder | null or string | null | Set a placeholder that will be shown in the input. If set to null, will try to use placeholder attribute from the original element set in `el` |
 | inputType | string | `'text'` | Specifies HTML `type` attribute for the input element. |
 | minChars | integer | 2 | Specifies how many characters user has to input before autocomplete suggester is shown. |
-| maxSuggests | integer | 10 | Specifies how many suggestions should be shown. |
+| maxSuggest | integer | 10 | Specifies how many suggestions should be shown. |
 | itemLabel | string | `'name'` | Property of an item object which is used to display text in tokens. |
 | itemName | string | `'items'` | Each token item will have its own hidden input which will contain an ID of a given item and a name attribute in an array format. This option sets a name. By default it is set to "items" which means that when user will submit a form server would receive an array of IDs under the name "items". |
 | newItemName | string | `'items_new'` | Same as the above except it is only related to new items which were not added via autocomplete. |
