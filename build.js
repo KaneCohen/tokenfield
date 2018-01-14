@@ -9,6 +9,7 @@ var targets = [
     output: {
       path: __dirname + '/dist',
       filename: 'tokenfield.min.js',
+      libraryTarget: 'var',
       library: 'Tokenfield'
     },
     plugins: [
@@ -26,14 +27,13 @@ var targets = [
 ];
 
 var baseConfig = {
-  debug: false,
   entry: './index',
   module: {
     loaders: [
       {
         test: /\.js$/,
         include: path.join(__dirname, 'lib'),
-        loaders: ['babel', 'eslint']
+        loaders: ['babel-loader', 'eslint-loader']
       }
     ]
   }
