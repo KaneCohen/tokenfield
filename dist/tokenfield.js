@@ -106,7 +106,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.1 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.2 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -591,7 +591,7 @@ var Tokenfield = function (_EventEmitter) {
           if (item !== target) item.classList.remove('selected');
         });
         target.classList.add('selected');
-        this._selectItem(target.key);
+        this._selectItem(target.key, false);
         this._refreshItemsSelection();
       }
     }
@@ -1096,9 +1096,11 @@ var Tokenfield = function (_EventEmitter) {
     value: function _selectItem(key) {
       var _this8 = this;
 
+      var scroll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
       this._vars.suggestedItems.forEach(function (v) {
         v.selected = v[_this8.key] === key;
-        if (v.selected) {
+        if (v.selected && scroll) {
           var height = parseInt(_this8._html.suggest.style.maxHeight, 10);
           if (height) {
             var listBounds = _this8._html.suggestList.getBoundingClientRect();
@@ -1472,8 +1474,9 @@ var Tokenfield = function (_EventEmitter) {
         return this;
       }
 
-      html.suggestList.innerHTML = '';
-      html.suggest.style.maxHeight = null;
+      if (o.maxSuggestWindow === 0) {
+        html.suggest.style.maxHeight = null;
+      }
 
       if (!v.suggestedItems.length) {
         return this;
@@ -1483,20 +1486,40 @@ var Tokenfield = function (_EventEmitter) {
         items[0].selected = true;
       }
 
+      var maxHeight = 0;
+
       items.every(function (item, k) {
         if (k >= o.maxSuggest) return false;
+        var child = html.suggestList.childNodes[k];
+        var el = item.el = _this14.renderSuggestedItem(item);
 
-        if (o.maxSuggestWindow > 0 && k === o.maxSuggestWindow) {
-          var bounds = html.suggestList.getBoundingClientRect();
-          html.suggest.style.maxHeight = bounds.height + 'px';
+        if (child) {
+          if (child.itemValue !== item[o.itemValue]) {
+            html.suggestList.replaceChild(el, child);
+          } else {
+            child.key = item[_this14.key];
+          }
+        } else if (!child) {
+          html.suggestList.appendChild(el);
         }
 
-        var el = _this14.renderSuggestedItem(item);
-        item.el = el;
-        html.suggestList.appendChild(el);
+        if (o.maxSuggestWindow > 0 && k < o.maxSuggestWindow) {
+          maxHeight += html.suggestList.childNodes[k].getBoundingClientRect().height;
+        }
+
+        if (o.maxSuggestWindow > 0 && k === o.maxSuggestWindow) {
+          html.suggest.style.maxHeight = maxHeight + 'px';
+        }
 
         return true;
       });
+
+      var overflow = html.suggestList.childElementCount - items.length;
+      if (overflow > 0) {
+        for (var i = 0; i < overflow; i++) {
+          html.suggestList.removeChild(html.suggestList.childNodes[items.length + i]);
+        }
+      }
 
       return this;
     }
@@ -1506,6 +1529,7 @@ var Tokenfield = function (_EventEmitter) {
       var o = this._options;
       var el = this._buildEl(this._templates.suggestItem);
       el.key = item[this.key];
+      el.itemValue = item[o.itemValue];
       el.innerHTML = item[o.itemData];
       el.setAttribute('title', item[o.itemData]);
       if (item.selected) {
