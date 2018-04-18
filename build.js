@@ -17,6 +17,15 @@ var targets = [
     ]
   },
   {
+    target: 'web',
+    output: {
+      path: __dirname + '/dist',
+      filename: 'tokenfield.web.js',
+      libraryTarget: 'var',
+      library: 'Tokenfield'
+    }
+  },
+  {
     target: 'node',
     output: {
       path: __dirname + '/dist',
