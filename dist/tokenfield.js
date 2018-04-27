@@ -106,7 +106,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.5 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.6 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -484,7 +484,7 @@ var Tokenfield = function (_EventEmitter) {
       reqData[r.timestampParam] = Math.round(new Date().getTime() / 1000);
 
       v.xhr = (0, _ajax2.default)(reqData, o.remote, function () {
-        if (v.xhr.readyState == 4) {
+        if (v.xhr && v.xhr.readyState == 4) {
           if (v.xhr.status == 200) {
             var response = JSON.parse(v.xhr.responseText);
             v.cache[val] = response;
@@ -1738,7 +1738,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 0.9.5 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 0.9.6 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
