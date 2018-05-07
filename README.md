@@ -61,6 +61,10 @@ would send an additional array which would contain an array of strings.
 | newItems | bool | true | Option to allow user to add custom tokens instead of using preset list of tokens or tokens retrieved from the server. |
 | multiple | bool | true | Option to allow multiple tokens in the field. |
 | maxItems | integer | 0 | Option to limit number of items. Set to 0 to remove the limit. |
+| matchRegex | string | `'{value}'` | Regex string that would be used for matching - when regex is compiled {value} would be replaced with escaped user input. |
+| matchFlags | string | `'i'` | Regex flags used in matching. Default is `i` - case insensitive matching. |
+| matchStart | bool | `false` | Option to do matching only from the beginning of the string - it compiles match regex to basicall this format: `/^{value}/i`. |
+| matchEnd | bool | `false` | Option to do matching only from the end of the string - it compiles match regex to basicall this format: `/{value}$/i`. |
 | remote | object | | Details on that - below in Autocomplete section. |
 | addItemOnBlur | bool | `false` | If set to true, will add new item to the tokenfield on input blur. Either sets new item or first match from suggested list. |
 | delimiters | array | [] | Option to specify certain characters/sets of characters to be used as delimiters during tokenization or input events on tokenfield. |
