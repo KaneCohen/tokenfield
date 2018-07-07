@@ -106,8 +106,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.8 <https://github.com/KaneCohen/tokenfield>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.9 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
@@ -1579,7 +1579,7 @@ var Tokenfield = function (_EventEmitter) {
       var el = this._buildEl(this._templates.suggestItem);
       el.key = item[this.key];
       el.itemValue = item[o.itemValue];
-      el.innerHTML = item[o.itemData];
+      el.innerHTML = this.renderSuggestedItemContent(item);
       el.setAttribute('title', item[o.itemData]);
       if (item.selected) {
         el.classList.add('selected');
@@ -1592,6 +1592,11 @@ var Tokenfield = function (_EventEmitter) {
         }
       }
       return el;
+    }
+  }, {
+    key: 'renderSuggestedItemContent',
+    value: function renderSuggestedItemContent(item) {
+      return item[this._options.itemData];
     }
   }, {
     key: 'showSuggestions',
@@ -1786,8 +1791,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 0.9.8 <https://github.com/KaneCohen/tokenfield>
- * Copyright 2016 Kane Cohen <https://github.com/KaneCohen>
+ * tokenfield 0.9.9 <https://github.com/KaneCohen/tokenfield>
+ * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
 function ajax(params) {
