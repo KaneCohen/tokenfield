@@ -106,7 +106,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.9.9 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.10.0 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -120,7 +120,7 @@ var reHasRegExpChar = RegExp(reRegExpChar.source);
 var _factory = document.createElement('div');
 
 var _templates = {
-  containerTokenfield: '<div class="tokenfield tokenfield-mode-tokens">\n      <input class="tokenfield-copy-helper"\n        style="position:fixed;left:-1000000px"\n        tabindex="-1"\n        type="text"\n      />\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n    </div>',
+  containerTokenfield: '<div class="tokenfield tokenfield-mode-tokens">\n      <input class="tokenfield-copy-helper"\n        style="display:none;position:fixed;top:-1000px;right:1000px;"\n        tabindex="-1"\n        type="text"\n      />\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n    </div>',
   containerList: '<div class="tokenfield tokenfield-mode-list">\n      <input class="tokenfield-input" />\n      <div class="tokenfield-suggest">\n        <ul class="tokenfield-suggest-list"></ul>\n      </div>\n      <div class="tokenfield-set">\n        <ul></ul>\n      </div>\n    </div>',
   suggestItem: '<li class="tokenfield-suggest-item"></li>',
   setItem: '<li class="tokenfield-set-item">\n      <span class="item-label"></span>\n      <a href="#" class="item-remove" tabindex="-1">\xD7</a>\n      <input class="item-input" type="hidden" />\n    </li>'
@@ -211,6 +211,7 @@ function makeDefaultsAndOptions() {
     newItems: true, // Allow input (on delimiter key) of new items.
     multiple: true, // Accept multiple items.
     maxItems: 0, // Set maximum allowed number of items.
+    minLength: 0, // Minimum length of the string to be converted into token.
     keys: { // Various action keys.
       17: 'ctrl',
       16: 'shift',
@@ -719,7 +720,7 @@ var Tokenfield = function (_EventEmitter) {
       var items = tokens.map(function (token) {
         return token.trim();
       }).filter(function (token) {
-        return token.length > 0 && token.length >= o.minChars && typeof v.delimiters[token] === 'undefined';
+        return token.length > 0 && token.length >= o.minLength && typeof v.delimiters[token] === 'undefined';
       }).map(function (token) {
         return _this4._newItem(token);
       });
@@ -898,10 +899,12 @@ var Tokenfield = function (_EventEmitter) {
         return item[o.copyProperty];
       }).join(o.copyDelimiter);
 
+      html.copyHelper.style.display = 'block';
       html.copyHelper.value = copyString;
       html.copyHelper.focus();
       html.copyHelper.select();
       document.execCommand('copy');
+      html.copyHelper.style.display = 'none';
       html.copyHelper.value = '';
       html.input.focus();
 
@@ -1389,9 +1392,10 @@ var Tokenfield = function (_EventEmitter) {
   }, {
     key: '_newItem',
     value: function _newItem(value) {
-      if (typeof value === 'string' && !value.length) return null;
-
       var o = this._options;
+
+      if (typeof value === 'string' && (!value.length || value.length < o.minLength)) return null;
+
       var item = this._getItem(value, o.itemData) || this._getSuggestedItem(value, o.itemData) || this._getAvailableItem(value, o.itemData);
 
       if (!item && o.newItems) {
@@ -2093,7 +2097,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 0.9.9 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 0.10.0 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
