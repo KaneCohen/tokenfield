@@ -98,6 +98,8 @@ var _ajax2 = _interopRequireDefault(_ajax);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -106,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.10.0 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 0.11.0 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -205,6 +207,8 @@ function makeDefaultsAndOptions() {
     mode: 'tokenfield', // Display mode: tokenfield or list.
     addItemOnBlur: false, // Add token if input field loses focus.
     addItemsOnPaste: false, // Add tokens using `delimiters` option below to tokenize given string.
+    keepItemsOrder: true, // Items and New Items values will be set in input with a specific position
+    // in the list so that you can retreive correct position on the backend.
     setItems: [], // List of set items.
     items: [], // List of available items to work with.
     // Example: [{id: 143, value: 'Hello World'}, {id: 144, value: 'Foo Bar'}].
@@ -1437,8 +1441,8 @@ var Tokenfield = function (_EventEmitter) {
       var html = this._html;
 
       html.items.innerHTML = '';
-      v.setItems.forEach(function (item) {
-        var itemEl = _this14._renderItem(item);
+      v.setItems.forEach(function (item, k) {
+        var itemEl = _this14._renderItem(item, k);
         html.items.appendChild(itemEl);
         item.el = itemEl;
         if (item.focused) {
@@ -1477,17 +1481,18 @@ var Tokenfield = function (_EventEmitter) {
     }
   }, {
     key: '_renderItem',
-    value: function _renderItem(item) {
+    value: function _renderItem(item, k) {
       var o = this._options;
 
       var itemHtml = this.renderSetItemHtml(item);
       var label = itemHtml.querySelector('.item-label');
       var input = itemHtml.querySelector('.item-input');
       var remove = itemHtml.querySelector('.item-remove');
+      var position = o.keepItemsOrder ? '[' + k + ']' : '[]';
 
       itemHtml.key = item[this.key];
       remove.key = item[this.key];
-      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + '[]');
+      input.setAttribute('name', (item.isNew ? o.newItemName : o.itemName) + position);
 
       input.value = item[item.isNew ? o.newItemValue : o.itemValue] || null;
       label.textContent = this.renderSetItemLabel(item);
@@ -1702,6 +1707,22 @@ var Tokenfield = function (_EventEmitter) {
       return this;
     }
   }, {
+    key: 'sortItems',
+    value: function sortItems() {
+      var _this16 = this;
+
+      var items = [];
+
+      [].concat(_toConsumableArray(this._html.items.childNodes)).forEach(function (el) {
+        var item = _this16._getItem(el.key);
+        if (item) {
+          items.push(item);
+        }
+      });
+
+      this.setItems(items);
+    }
+  }, {
     key: 'removeItem',
     value: function removeItem(value) {
       var o = this._options;
@@ -1795,7 +1816,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 0.10.0 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 0.11.0 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
