@@ -460,7 +460,14 @@ var Tokenfield = function (_EventEmitter) {
       var fullCompensate = compensate + parseInt(style.paddingLeft, 10) + parseInt(style.borderLeftWidth, 10);
 
       html.sizer.innerHTML = val;
-      html.input.style.width = '20px';
+      html.sizer.style.maxWidth = b.width - compensate + 'px';
+
+      if (b.width === 0) {
+        html.input.style.width = '100%';
+        return;
+      } else {
+        html.input.style.width = '20px';
+      }
 
       var sb = html.sizer.getBoundingClientRect();
       var ib = html.input.getBoundingClientRect();
@@ -634,6 +641,7 @@ var Tokenfield = function (_EventEmitter) {
 
       this._focused = true;
       this._html.container.classList.add('focused');
+      this._resizeInput();
 
       if (html.input.value.trim().length >= o.minChars) {
         this.showSuggestions();
