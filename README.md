@@ -136,3 +136,15 @@ Available methods are:
 | remapData | Fired on every data request. Override it if you want to change structure of an available data - change props names, sanitize property values, remove props. Just make sure to return array of objects which would be consumed by the tokenfield instance. |
 | renderSetItemLabel | Fired on token item render. Override this method in order to change how label for each token is rendered |
 | onInput | Fired when you type something in the input field. Accepts value of the input field and event object. |
+| showSuggestions | Shows list of suggested items if there are any. |
+| hideSuggestions | Temporarily hides list of suggested items. |
+| getItems | Returns an array containing objects for currently set tokens. |
+| setItems | Override current set tokens with your own array of tokens. Input could be array or a single object and must conform to the format described at the beginning of the readme. |
+| addItems | Add tokens. Input could be an array or a single object. Object or array of objects must conform to the correct format described at the beinning of readme. |
+| sortItems | Updates internal state of the set tokens based on the HTML state of the tokens - useful when you apply a "sortable" or "draggable" library on tokenfield items. |
+| removeItem(value) | Remove an item based on the given input. Input could be an item object, item name for new item or item id for existing item. |
+| emptyItems | Remove all currently set token items. |
+| getSuggestedItems | Returns an array of suggested items. |
+| focus | Focus the tokenfield. |
+| blur | Remove focus from the tokenfield. |
+| remove | Destroy tokenfield and display original element it was attached to. |
