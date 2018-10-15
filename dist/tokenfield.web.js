@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.0.0 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.0.1 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -1680,49 +1680,41 @@ var Tokenfield = function (_EventEmitter) {
     value: function setItems() {
       var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-      if (!Array.isArray(items)) {
-        items = [items];
-      }
-      this._vars.setItems = this._prepareData(items || []);
-      this._renderItems()._refreshInput().hideSuggestions();
-      this.emit('change', this);
+      this._vars.setItems = [];
+      this.addItems(items);
       return this;
     }
   }, {
     key: 'addItems',
     value: function addItems() {
+      var _this16 = this;
+
       var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
       var key = this._options.itemValue;
       if (!Array.isArray(items)) {
         items = [items];
       }
-      var idsHash = {};
-      this.getItems().forEach(function (item) {
-        idsHash[item[key]] = true;
-      });
-      items = items.filter(function (item) {
-        return idsHash[item[key]] !== true;
-      });
-      if (!items.length) {
-        return this;
-      }
 
-      var preparedItems = this._prepareData(items);
-      this._vars.setItems = this._vars.setItems.concat(preparedItems);
+      this._prepareData(items).forEach(function (item) {
+        if (item.isNew || typeof item[key] !== 'undefined') {
+          _this16._addItem(item);
+        }
+      });
+
       this._renderItems()._refreshInput().hideSuggestions();
-      this.emit('change', this);
+
       return this;
     }
   }, {
     key: 'sortItems',
     value: function sortItems() {
-      var _this16 = this;
+      var _this17 = this;
 
       var items = [];
 
       [].concat(_toConsumableArray(this._html.items.childNodes)).forEach(function (el) {
-        var item = _this16._getItem(el.key);
+        var item = _this17._getItem(el.key);
         if (item) {
           items.push(item);
         }
@@ -2126,7 +2118,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 1.0.0 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 1.0.1 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
