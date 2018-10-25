@@ -1009,7 +1009,7 @@ var Tokenfield = function (_EventEmitter) {
       if (target.classList.contains('item-remove')) {
         e.preventDefault();
 
-        this._removeItem(target.key)._defocusItems()._renderItems()._keyInput(e);
+        this._removeItem(target.key)._defocusItems()._renderItems()._refreshInput(false)._keyInput(e);
 
         this.focus();
       } else if (target.classList.contains('tokenfield-suggest-item')) {
