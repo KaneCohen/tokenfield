@@ -1,6 +1,6 @@
 {
   "name": "tokenfield",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Input field with tagging/token/chip capabilities written in raw JavaScript",
   "keywords": [
     "tagging",
@@ -17,6 +17,7 @@
     "type": "git",
     "url": "https://github.com/KaneCohen/tokenfield.git"
   },
+  "module": "lib/tokenfield.js",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "babel-core": "6.26.0",
