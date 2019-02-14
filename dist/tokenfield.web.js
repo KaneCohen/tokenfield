@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.1.3 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.2.0 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -260,6 +260,7 @@ function makeDefaultsAndOptions() {
     maxSuggest: 10, // Max items in the suggest box.
     maxSuggestWindow: 10, // Limit height of the suggest box after given number of items.
     filterSetItems: true, // Filters already set items from the suggestions list.
+    filterMatchCase: false, // Sets case-sensitivity for checking whether new item is already set in the list.
 
     singleInput: false, // Pushes all token values into a single. Accepts: true, 'selector', or an element.
     // When set to true - would use tokenfield target element as an input to fill.
@@ -1276,8 +1277,10 @@ var Tokenfield = function (_EventEmitter) {
   }, {
     key: '_filterItems',
     value: function _filterItems(items, val, prop) {
+      var matchCase = this._options.filterMatchCase;
       return items.filter(function (v) {
         if (typeof v[prop] === 'string' && typeof val === 'string') {
+          if (matchCase) return v[prop] === val;
           return v[prop].toLowerCase() == val.toLowerCase();
         }
         return v[prop] == val;
@@ -2121,7 +2124,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 1.1.3 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 1.2.0 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
