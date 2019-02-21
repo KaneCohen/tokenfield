@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.2.0 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.2.1 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -304,7 +304,7 @@ var Tokenfield = function (_EventEmitter) {
     _this._options.keys = _extends({}, _options.keys, options.keys);
     _this._options.remote = _extends({}, _options.remote, options.remote);
     _this._templates = _extends({}, _templates, options.templates);
-    _this._vars.setItems = _this._prepareData(_this._options.setItems || []);
+    _this._vars.setItems = _this._prepareData(_this.remapData(_this._options.setItems || []));
     _this._focused = false;
     _this._input = null;
     _this._form = false;
@@ -385,7 +385,7 @@ var Tokenfield = function (_EventEmitter) {
       html.items = html.container.querySelector('.tokenfield-set > ul');
       html.input = html.container.querySelector('.tokenfield-input');
       html.input.setAttribute('type', o.inputType);
-      html.input.placeholder = o.placeholder;
+      html.input.placeholder = this._vars.setItems.length ? '' : o.placeholder;
       html.copyHelper = html.container.querySelector('.tokenfield-copy-helper');
 
       o.el.style.display = 'none';
@@ -2124,7 +2124,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 1.2.0 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 1.2.1 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
