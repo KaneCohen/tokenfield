@@ -1834,20 +1834,20 @@ function ajax(params) {
   var url = options.url;
   var paramsArr = [];
   for (var key in params) {
-    paramsArr.push(key + '=' + params[key]);
+    paramsArr.push(key + "=" + encodeURIComponent(params[key]));
   }
 
-  var paramsString = paramsArr.join('&');
+  var paramsString = paramsArr.join("&");
 
-  if (options.type.toLowerCase() === 'get') {
-    url += '?' + paramsString;
+  if (options.type.toLowerCase() === "get") {
+    url += "?" + paramsString;
   }
 
   xhr.open(options.type, url, true);
 
   for (var header in options.headers) {
     var value = options.headers[header];
-    if (typeof value === 'function') {
+    if (typeof value === "function") {
       value = value(params, options);
     }
     xhr.setRequestHeader(header, value);
