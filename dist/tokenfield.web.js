@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.2.2 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.3.0 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -629,7 +629,7 @@ var Tokenfield = function (_EventEmitter) {
     }
   }, {
     key: '_onFocus',
-    value: function _onFocus(e) {
+    value: function _onFocus() {
       var v = this._vars;
       var html = this._html;
       var o = this._options;
@@ -789,9 +789,9 @@ var Tokenfield = function (_EventEmitter) {
     value: function _keyAction(e) {
       var _this6 = this;
 
+      var key = this.key;
       var item = null;
       var v = this._vars;
-      var key = this.key;
       var o = this._options;
       var html = this._html;
       var keyName = o.keys[e.keyCode];
@@ -845,7 +845,7 @@ var Tokenfield = function (_EventEmitter) {
             return false;
           }
 
-          val = this.onInput(val);
+          val = this.onInput(val, e);
           if (item) {
             this._addItem(item);
           } else if (val.length) {
@@ -1014,11 +1014,9 @@ var Tokenfield = function (_EventEmitter) {
         e.preventDefault();
 
         this._removeItem(target.key)._defocusItems()._renderItems()._refreshInput(false)._keyInput(e);
-
-        this.focus();
       } else if (target.classList.contains('tokenfield-suggest-item')) {
         var item = this._getSuggestedItem(target.key);
-        this._addItem(item)._renderItems()._refreshInput()._refreshSuggestions().focus();
+        this._addItem(item)._renderItems()._refreshInput()._refreshSuggestions();
       } else {
         var setItem = getPath(target).filter(function (node) {
           return node.classList && node.classList.contains('tokenfield-set-item');
@@ -1030,9 +1028,9 @@ var Tokenfield = function (_EventEmitter) {
         } else {
           this._keyInput(e);
         }
-
-        this.focus();
       }
+
+      this.focus();
     }
   }, {
     key: '_selectPrevItem',
@@ -1622,22 +1620,6 @@ var Tokenfield = function (_EventEmitter) {
       return item[this._options.itemData];
     }
   }, {
-    key: 'showSuggestions',
-    value: function showSuggestions() {
-      if (this._vars.suggestedItems.length) {
-        this.emit('showSuggestions', this);
-        if (!this._options.maxItems || this._options.maxItems && this._vars.setItems.length < this._options.maxItems) {
-          this._html.suggest.style.display = 'block';
-          this._vars.suggested = true;
-          this.renderSuggestions(this._vars.suggestedItems);
-        }
-        this.emit('shownSuggestions', this);
-      } else {
-        this.hideSuggestions();
-      }
-      return this;
-    }
-  }, {
     key: '_refreshSuggestions',
     value: function _refreshSuggestions() {
       var v = this._vars;
@@ -1655,13 +1637,30 @@ var Tokenfield = function (_EventEmitter) {
       if (v.suggestedItems.length) {
         if (!o.maxItems || o.maxItems && v.setItems.length < o.maxItems) {
           this.renderSuggestions(v.suggestedItems);
-        } else {
-          this.hideSuggestions();
+          return this;
         }
+      }
+
+      this.hideSuggestions();
+      return this;
+    }
+  }, {
+    key: 'showSuggestions',
+    value: function showSuggestions() {
+      var v = this._vars;
+      var o = this._options;
+
+      if (v.suggestedItems.length) {
+        this.emit('showSuggestions', this);
+        if (!o.maxItems || o.maxItems && v.setItems.length < o.maxItems) {
+          this._html.suggest.style.display = 'block';
+          v.suggested = true;
+          this.renderSuggestions(v.suggestedItems);
+        }
+        this.emit('shownSuggestions', this);
       } else {
         this.hideSuggestions();
       }
-
       return this;
     }
   }, {
@@ -1673,6 +1672,16 @@ var Tokenfield = function (_EventEmitter) {
       this._html.suggestList.innerHTML = '';
       this.emit('hiddenSuggestions', this);
       return this;
+    }
+  }, {
+    key: 'setSuggestedItems',
+    value: function setSuggestedItems(items) {
+      if (!Array.isArray(items)) {
+        throw new Error('Argument must be an array of objects.');
+      }
+
+      this._options.items = items;
+      this._refreshSuggestions();
     }
   }, {
     key: 'getItems',
@@ -2124,7 +2133,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 1.2.2 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 1.3.0 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
