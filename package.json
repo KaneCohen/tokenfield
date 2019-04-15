@@ -17,7 +17,6 @@
     "type": "git",
     "url": "https://github.com/KaneCohen/tokenfield.git"
   },
-  "module": "lib/tokenfield.js",
   "main": "dist/tokenfield.js",
   "license": "BSD-3-Clause",
   "devDependencies": {
