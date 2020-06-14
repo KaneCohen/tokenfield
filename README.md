@@ -80,6 +80,8 @@ would send an additional array which would contain an array of strings.
 | newItemName | string | `'items_new'` | Same as the above except it is only related to new items which were not added via autocomplete. |
 | itemValue | string | `'id'` | Specifies which property from the autocomplete data to use as a primary identifying value. |
 | itemData | string | `'name'` | Which property should be used when you do autocomplete on a given array of items. |
+| validateNewItem | closure | `null` | If set, closure will run on every attempt to add new non-existing item to validate it. Return `true` to allow an item, return any `falsy` value and it will prevent new item from being added. |
+
 
 ### Remote Options
 
