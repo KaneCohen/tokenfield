@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.3.0 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.4.0 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -278,7 +278,8 @@ function makeDefaultsAndOptions() {
 
     itemValue: 'id', // Value that will be taken out of the results and inserted into itemAttr.
     newItemValue: 'name', // Value that will be taken out of the results and inserted into itemAttr.
-    itemData: 'name' // Which property to search for.
+    itemData: 'name', // Which property to search for.
+    validateNewItem: null // Run a function to test if new item is valid and can be added.
   };
   return { _defaults: _defaults, _options: _options };
 }
@@ -1417,6 +1418,11 @@ var Tokenfield = function (_EventEmitter) {
       if (!item && o.newItems) {
         var _item;
 
+        // If validation is set and returns false - item should not be added.
+        if (typeof o.validateNewItem === 'function' && !o.validateNewItem(value)) {
+          return null;
+        }
+
         item = (_item = {
           isNew: true
         }, _defineProperty(_item, this.key, guid()), _defineProperty(_item, o.itemData, value), _item);
@@ -1686,8 +1692,13 @@ var Tokenfield = function (_EventEmitter) {
   }, {
     key: 'getItems',
     value: function getItems() {
+      var _this16 = this;
+
       return this._vars.setItems.map(function (item) {
-        return _extends({}, item);
+        var v = _extends({}, item);
+        delete v[_this16.key];
+        delete v.el;
+        return v;
       });
     }
   }, {
@@ -1702,7 +1713,7 @@ var Tokenfield = function (_EventEmitter) {
   }, {
     key: 'addItems',
     value: function addItems() {
-      var _this16 = this;
+      var _this17 = this;
 
       var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
@@ -1713,7 +1724,7 @@ var Tokenfield = function (_EventEmitter) {
 
       this._prepareData(items).forEach(function (item) {
         if (item.isNew || typeof item[key] !== 'undefined') {
-          _this16._addItem(item);
+          _this17._addItem(item);
         }
       });
 
@@ -1724,12 +1735,12 @@ var Tokenfield = function (_EventEmitter) {
   }, {
     key: 'sortItems',
     value: function sortItems() {
-      var _this17 = this;
+      var _this18 = this;
 
       var items = [];
 
       [].concat(_toConsumableArray(this._html.items.childNodes)).forEach(function (el) {
-        var item = _this17._getItem(el.key);
+        var item = _this18._getItem(el.key);
         if (item) {
           items.push(item);
         }
