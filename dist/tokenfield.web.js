@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.4.0 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.4.1 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2018 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -449,6 +449,8 @@ var Tokenfield = function (_EventEmitter) {
         this._resizeInput();
         var placeholder = v.setItems.length ? '' : this._options.placeholder;
         html.input.setAttribute('placeholder', placeholder);
+      } else if (this._options.mode === 'list') {
+        html.input.setAttribute('placeholder', '');
       }
       return this;
     }
@@ -1471,6 +1473,8 @@ var Tokenfield = function (_EventEmitter) {
       });
 
       if (v.setItems.length > 1 && o.mode === 'tokenfield') {
+        html.input.setAttribute('placeholder', '');
+      } else if (o.mode === 'list') {
         html.input.setAttribute('placeholder', '');
       }
 
