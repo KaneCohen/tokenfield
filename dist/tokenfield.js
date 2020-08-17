@@ -440,6 +440,12 @@ var Tokenfield = function (_EventEmitter) {
       html.container.appendChild(html.sizer);
     }
   }, {
+    key: '_minimizeInput',
+    value: function _minimizeInput() {
+      this._html.input.style.width = '20px';
+      return this;
+    }
+  }, {
     key: '_refreshInput',
     value: function _refreshInput() {
       var empty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
@@ -860,7 +866,7 @@ var Tokenfield = function (_EventEmitter) {
           }
 
           if (item) {
-            this._renderItems().focus()._refreshInput()._refreshSuggestions()._deselectItems();
+            this._minimizeInput()._renderItems().focus()._refreshInput()._refreshSuggestions()._deselectItems();
           }
           e.preventDefault();
           break;
@@ -959,7 +965,7 @@ var Tokenfield = function (_EventEmitter) {
         });
         this._refreshSuggestions()._keyInput(e);
       }
-      this._renderItems()._refreshInput(false);
+      this._minimizeInput()._renderItems()._refreshInput(false);
 
       return this;
     }
@@ -1020,10 +1026,10 @@ var Tokenfield = function (_EventEmitter) {
       if (target.classList.contains('item-remove')) {
         e.preventDefault();
 
-        this._removeItem(target.key)._defocusItems()._renderItems()._refreshInput(false)._keyInput(e);
+        this._removeItem(target.key)._defocusItems()._minimizeInput()._renderItems()._refreshInput(false)._keyInput(e);
       } else if (target.classList.contains('tokenfield-suggest-item')) {
         var item = this._getSuggestedItem(target.key);
-        this._addItem(item)._renderItems()._refreshInput()._refreshSuggestions();
+        this._addItem(item)._minimizeInput()._renderItems()._refreshInput()._refreshSuggestions();
       } else {
         var setItem = getPath(target).filter(function (node) {
           return node.classList && node.classList.contains('tokenfield-set-item');
@@ -1465,6 +1471,7 @@ var Tokenfield = function (_EventEmitter) {
       var html = this._html;
 
       html.items.innerHTML = '';
+
       v.setItems.forEach(function (item, k) {
         var itemEl = _this14._renderItem(item, k);
         html.items.appendChild(itemEl);
@@ -1736,7 +1743,7 @@ var Tokenfield = function (_EventEmitter) {
         }
       });
 
-      this._renderItems()._refreshInput().hideSuggestions();
+      this._minimizeInput()._renderItems()._refreshInput().hideSuggestions();
 
       return this;
     }
