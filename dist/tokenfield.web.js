@@ -108,7 +108,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Input field with tagging/token/chip capabilities written in raw JavaScript
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.5.0 <https://github.com/KaneCohen/tokenfield>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * tokenfield 1.5.1 <https://github.com/KaneCohen/tokenfield>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Copyright 2022 Kane Cohen <https://github.com/KaneCohen>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Available under BSD-3-Clause license
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
@@ -658,7 +658,9 @@ var Tokenfield = function (_EventEmitter) {
 
       this._focused = true;
       this._html.container.classList.add('focused');
-      this._resizeInput();
+      if (o.mode === 'tokenfield') {
+        this._resizeInput();
+      }
 
       if (html.input.value.trim().length >= o.minChars) {
         this.showSuggestions();
@@ -726,7 +728,9 @@ var Tokenfield = function (_EventEmitter) {
     key: '_onResize',
     value: function _onResize() {
       for (var key in _tokenfields) {
-        _tokenfields[key]._resizeInput(_tokenfields[key]._html.input.value);
+        if (_tokenfields[key]._options.mode === 'tokenfield') {
+          _tokenfields[key]._resizeInput(_tokenfields[key]._html.input.value);
+        }
       }
     }
   }, {
@@ -2336,7 +2340,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = ajax;
 /**
  * Simple AJAX handling module.
- * tokenfield 1.5.0 <https://github.com/KaneCohen/tokenfield>
+ * tokenfield 1.5.1 <https://github.com/KaneCohen/tokenfield>
  * Copyright 2022 Kane Cohen <https://github.com/KaneCohen>
  * Available under BSD-3-Clause license
  */
