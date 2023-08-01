@@ -200,7 +200,8 @@ function makeDefaultsAndOptions() {
     suggestedItems: [],
     setItems: [],
     events: {},
-    delimiters: {}
+    delimiters: {},
+    readOnly: false
   };
 
   var _options = {
@@ -279,7 +280,9 @@ function makeDefaultsAndOptions() {
     itemValue: 'id', // Value that will be taken out of the results and inserted into itemAttr.
     newItemValue: 'name', // Value that will be taken out of the results and inserted into itemAttr.
     itemData: 'name', // Which property to search for.
-    validateNewItem: null // Run a function to test if new item is valid and can be added.
+    validateNewItem: null, // Run a function to test if new item is valid and can be added.
+
+    readOnly: false // Whether the token field is in readOnly mode
   };
   return { _defaults: _defaults, _options: _options };
 }
@@ -386,6 +389,11 @@ var Tokenfield = function (_EventEmitter) {
       html.items = html.container.querySelector('.tokenfield-set > ul');
       html.input = html.container.querySelector('.tokenfield-input');
       html.input.setAttribute('type', o.inputType);
+      if ( o.readOnly ) {
+        html.input.setAttribute('readonly', 'true');
+      } else {
+        html.input.removeAttribute('readonly');
+      }
       if (o.mode === 'tokenfield') {
         html.input.placeholder = this._vars.setItems.length ? '' : o.placeholder;
       } else {
@@ -1539,6 +1547,12 @@ var Tokenfield = function (_EventEmitter) {
         itemHtml.classList.add('focused');
       }
 
+      if ( o.readOnly ) {
+        remove.style.display = "none";
+      } else {
+        remove.style.display = null;
+      }
+
       return itemHtml;
     }
   }, {
@@ -1786,6 +1800,27 @@ var Tokenfield = function (_EventEmitter) {
       }
 
       this._removeItem(item[this.key])._renderItems();
+
+      return this;
+    }
+  }, {
+    key: 'setReadOnly',
+    value: function setReadOnly(value) {
+      var o = this._options;
+      o.readOnly = value;
+
+      // Set input field read only attribute
+      if (o.readOnly) {
+        this._html.input.setAttribute('readonly', 'true');
+      } else {
+        this._html.input.removeAttribute('readonly');
+      }
+
+      // Show/Hide the remove buttons on the tags.
+      var itemRemoves = this._html.items.getElementsByClassName("item-remove")
+      for ( var index = 0 ; index < itemRemoves.length ; index++ ) {
+        itemRemoves[index].style.display = (o.readOnly ? 'none' : null);
+      }
 
       return this;
     }
