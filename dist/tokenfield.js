@@ -1627,7 +1627,7 @@ var Tokenfield = function (_EventEmitter) {
       var el = this._buildEl(this._templates.suggestItem);
       el.key = item[this.key];
       el.itemValue = item[o.itemValue];
-      el.innerHTML = this.renderSuggestedItemContent(item);
+      el.innerText = this.renderSuggestedItemContent(item);
       el.setAttribute('title', item[o.itemData]);
       if (item.selected) {
         el.classList.add('selected');
