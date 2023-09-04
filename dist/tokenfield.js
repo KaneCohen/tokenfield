@@ -915,7 +915,7 @@ var Tokenfield = function (_EventEmitter) {
             } else {
               v.timer = setTimeout(function () {
                 _this6._keyInput(e);
-              }, o.delay);
+              }, o.remote.delay);
             }
             break;
           }
@@ -1007,7 +1007,7 @@ var Tokenfield = function (_EventEmitter) {
         if (o.remote.url) {
           v.timer = setTimeout(function () {
             _this8._fetchData(val);
-          }, o.delay);
+          }, o.remote.delay);
         } else if (!o.remote.url && o.items.length) {
           var data = this._prepareData(o.items);
           var items = this._filterData(val, data);
@@ -1627,7 +1627,7 @@ var Tokenfield = function (_EventEmitter) {
       var el = this._buildEl(this._templates.suggestItem);
       el.key = item[this.key];
       el.itemValue = item[o.itemValue];
-      el.innerHTML = this.renderSuggestedItemContent(item);
+      el.innerText = this.renderSuggestedItemContent(item);
       el.setAttribute('title', item[o.itemData]);
       if (item.selected) {
         el.classList.add('selected');
