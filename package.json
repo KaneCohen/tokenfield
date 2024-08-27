@@ -29,7 +29,7 @@
     "babel-plugin-transform-object-assign": "6.22.0",
     "eslint": "4.13.0",
     "eslint-loader": "1.9.0",
-    "webpack": "3.10.0",
+    "webpack": "5.94.0",
     "node-sass": "4.14.1",
     "chai": "4.1.2",
     "mocha": "4.0.1",
